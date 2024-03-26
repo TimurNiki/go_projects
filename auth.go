@@ -64,7 +64,7 @@ func validateJWT(tokenString string) (*jwt.Token, error) {
 	secret := os.Getenv("JWT_SECRET")
 	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(secret), nil
 	})
@@ -79,6 +79,6 @@ func HashPassword(password string) (string, error) {
 }
 func permissionDenied(w http.ResponseWriter) {
 	WriteJSON(w, http.StatusUnauthorized, ErrorResponse{
-		Error: fmt.Errorf("permission denied").Error(),
+		Error: fmt.Errorf("Permission denied").Error(),
 	})
 }
