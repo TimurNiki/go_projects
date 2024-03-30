@@ -17,7 +17,7 @@ type TasksService struct {
 	store Store
 }
 
-func newTasksService(s Store) *TasksService {
+func NewTasksService(s Store) *TasksService {
 	return &TasksService{store: s}
 }
 
