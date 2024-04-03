@@ -1,4 +1,4 @@
-package main
+package v1
 
 import (
 	"errors"
@@ -6,13 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-
-type Student struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	Class   int    `json:"class"`
-	Teacher string `json:"teacher"`
-}
 
 var students = []Student{
 	{ID: 1, Name: "John", Class: 10, Teacher: "Mr. X"},
@@ -35,6 +28,7 @@ func createStudent(c *gin.Context) {
 	students = append(students, studentByUser)
 	c.JSON(200, gin.H{"message": "Student created successfully"})
 }
+
 //* first test
 // func getStudentByID(c *gin.Context) {
 // 	str_id := c.Param("id")
@@ -62,12 +56,12 @@ func main() {
 }
 
 func getStudentBI(i_id int) (*Student, error) {
-for i,s :=range students{
-	if s.ID == i_id{
-		return &students[i], nil
+	for i, s := range students {
+		if s.ID == i_id {
+			return &students[i], nil
+		}
 	}
-}
-return nil, errors.New("Student not found")
+	return nil, errors.New("Student not found")
 }
 func getStudent(c *gin.Context) {
 	s_id := c.Param("id")
