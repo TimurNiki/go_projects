@@ -21,6 +21,7 @@ func main() {
 		AllowNativePasswords: true,
 		ParseTime:            true,
 	}
+	
 	db, err := db.NewMySQLStorage(cfg)
 	if err != nil {
 		log.Fatal(err)

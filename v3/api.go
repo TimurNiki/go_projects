@@ -1,4 +1,8 @@
-// package main
+package main
+
+import (
+	"fmt"
+)
 
 // import "net/http"
 
@@ -24,3 +28,7 @@
 // 	return server.ListenAndServe()
 
 // }
+
+func api(){
+	fmt.Printf("hello world")
+}

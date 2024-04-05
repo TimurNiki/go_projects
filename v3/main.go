@@ -1,6 +1,9 @@
-// package main
+package main
 
-// func main() {
-// 	server := NewAPIServer(":8080")
-// 	server.Run()
-// }
+import (
+	"fmt"
+)
+
+func main(){
+	fmt.Printf("hello world")
+}
