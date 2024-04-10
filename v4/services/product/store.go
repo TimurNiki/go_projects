@@ -30,3 +30,24 @@ func (s *Store) GetProducts() ([]types.Product, error){
 
 	return p, nil
 }
+
+
+
+func scanRowsIntoProduct(rows *sql.Rows) (*types.Product, error) {
+	product := new(types.Product)
+
+	err := rows.Scan(
+		&product.ID,
+		&product.Name,
+		&product.Description,
+		&product.Image,
+		&product.Price,
+		&product.Quantity,
+		&product.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return product, nil
+}

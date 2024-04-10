@@ -2,10 +2,12 @@ package api
 
 import (
 	"database/sql"
-	"github.com/TimurNiki/go_api_tutorial/v4/services/user"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/TimurNiki/go_api_tutorial/v4/services/product"
+	"github.com/TimurNiki/go_api_tutorial/v4/services/user"
+	"github.com/gorilla/mux"
 )
 
 type APIServer struct {
@@ -31,6 +33,10 @@ func (s *APIServer) Run() error {
 	userHandler := user.NewHandler(userStore)
 	// register routes
 	userHandler.RegisterRoutes(subrouter)
+
+	productStore:=product.NewStore(s.db)
+	productHandler:=product.NewHandler(productStore)
+	productHandler.RegisterRoutes(subrouter)
 	
 	log.Printf("Listening on port %s", s.addr)
 	return http.ListenAndServe(s.addr, router)
