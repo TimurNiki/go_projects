@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-
 	"github.com/TimurNiki/go_api_tutorial/v4/configs"
 	"github.com/TimurNiki/go_api_tutorial/v4/services/auth"
 	"github.com/TimurNiki/go_api_tutorial/v4/types"
