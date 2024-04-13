@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
+	
 )
 
 var students = []Student{
