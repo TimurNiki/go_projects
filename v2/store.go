@@ -23,11 +23,14 @@ func NewStore(db *sql.DB) *Storage {
 }
 
 func (s *Storage) CreateUser(u *User) (*User, error) {
-	return nil
+	rows, err := s.db.Exec()
 }
 
 func (s *Storage) GetUserByID(id string) (*User, error) {
-	return nil
+	var u User
+	err := s.db.QueryRow("SELECT id, email, firstName, lastName, createdAt FROM users WHERE id = ?", id).Scan(&u.ID, &u.Email, &u.FirstName, &u.LastName, &u.CreatedAt)
+
+	return &u, err
 }
 
 func (s *Storage) CreateProject(p *Project) error {
@@ -47,9 +50,7 @@ func (s *Storage) CreateTask(t *Task) (*Task, error) {
 }
 
 func (s *Storage) GetTask(id string) (*Task, error) {
-	return nil
-}
-
-func (s *Storage) DeleteTask(id string) error {
-	return nil
+	var t Task
+	err := s.db.QueryRow("SELECT id, name, status, project_id, assigned_to, createdAt FROM tasks WHERE id = ?", id).Scan(&t.ID, &t.Name, &t.Status, &t.ProjectID, &t.AssignedToID, &t.CreatedAt)
+	return &t, nil
 }
