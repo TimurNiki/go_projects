@@ -45,19 +45,39 @@ func (s *Storage) GetUserByID(id string) (*User, error) {
 }
 
 func (s *Storage) CreateProject(p *Project) error {
-	return nil
+	_, err:= s.db.Exec("INSERT INTO projects (name) VALUES (?)", p.Name)
+	return err
 }
 
 func (s *Storage) GetProject(id string) (*Project, error) {
-	return nil
+	var p Product
+	err:=s.db.QueryRow("SELECT id, name, createdAt FROM projects WHERE id = ?", id).Scan(&p.ID, &p.Name, &p.CreatedAt)
+	return &p, nil
 }
 
 func (s *Storage) DeleteProject(id string) error {
+	_,err:=s.db.Exec("DELETE FROM projects WHERE id = ?", id)
+	if err!=nil{
+		return err
+	}
+
 	return nil
 }
 
 func (s *Storage) CreateTask(t *Task) (*Task, error) {
-	return nil
+	rows, err := s.db.Exec("INSERT INTO tasks (name, status, project_id, assigned_to) VALUES (?, ?, ?, ?)", t.Name, t.Status, t.ProjectID, t.AssignedToID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := rows.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+
+	t.ID = id
+	return t, nil
 }
 
 func (s *Storage) GetTask(id string) (*Task, error) {
