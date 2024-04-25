@@ -24,17 +24,17 @@ func NewStore(db *sql.DB) *Storage {
 
 func (s *Storage) CreateUser(u *User) (*User, error) {
 	rows, err := s.db.Exec("INSERT INTO users (email, firstName, lastName, password) VALUES (?, ?, ?, ?)", u.Email, u.FirstName, u.LastName, u.Password)
-	if err!=nil{
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
 
-	id,err:=rows.LastInsertID()
-	if err!=nil{
-		return nil,err
+	id, err := rows.LastInsertID()
+	if err != nil {
+		return nil, err
 	}
 
 	u.id = id
-	 return u,nil
+	return u, nil
 }
 
 func (s *Storage) GetUserByID(id string) (*User, error) {
@@ -45,19 +45,19 @@ func (s *Storage) GetUserByID(id string) (*User, error) {
 }
 
 func (s *Storage) CreateProject(p *Project) error {
-	_, err:= s.db.Exec("INSERT INTO projects (name) VALUES (?)", p.Name)
+	_, err := s.db.Exec("INSERT INTO projects (name) VALUES (?)", p.Name)
 	return err
 }
 
 func (s *Storage) GetProject(id string) (*Project, error) {
 	var p Product
-	err:=s.db.QueryRow("SELECT id, name, createdAt FROM projects WHERE id = ?", id).Scan(&p.ID, &p.Name, &p.CreatedAt)
+	err := s.db.QueryRow("SELECT id, name, createdAt FROM projects WHERE id = ?", id).Scan(&p.ID, &p.Name, &p.CreatedAt)
 	return &p, nil
 }
 
 func (s *Storage) DeleteProject(id string) error {
-	_,err:=s.db.Exec("DELETE FROM projects WHERE id = ?", id)
-	if err!=nil{
+	_, err := s.db.Exec("DELETE FROM projects WHERE id = ?", id)
+	if err != nil {
 		return err
 	}
 
