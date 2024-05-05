@@ -39,8 +39,6 @@ func withJWTAuth(handlerFunc http.HandlerFunc, store Store) http.HandlerFunc {
 			permissionDenied(w)
 			return
 		}
-
-		
 		// Token is valid
 		handlerFunc(w, r)
 	}

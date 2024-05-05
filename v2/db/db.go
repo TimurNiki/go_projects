@@ -45,7 +45,6 @@ func (s *MyStorage) Init() (*sql.DB, error) {
 	if err := s.createTasksTable(); err != nil {
 		return nil, err
 	}
-
 	return s.db, nil
 }
 
@@ -94,6 +93,5 @@ func (s *MyStorage) createTasksTable() error {
 			FOREIGN KEY (projectId) REFERENCES projects(id)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	`)
-
 	return err
 }
