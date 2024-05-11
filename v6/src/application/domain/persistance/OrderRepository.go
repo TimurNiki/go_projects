@@ -48,7 +48,17 @@ func (or orderRepository) ShipOrderByCargoCode(cargoCode string) error {
 }
 
 func GetCargoCodeByID(code string) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if code != "" {
+			var cargo entity.Cargo
+			if db.Session(&gorm.Session{}).Model(&cargo).First(&cargo, "code = ?", code).Error == nil {
+				return db.Where("cargo_id = ?", cargo.Id)
+			}
+		}
 
+		_ = db.AddError(errors.New("invalid Cargo Code"))
+		return db
+	}
 }
 
 func NonCancelledOrders(db *gorm.DB) *gorm.DB {
