@@ -16,13 +16,12 @@ type application struct {
 }
 
 func main() {
-	
 
 	// Define a new command-line flag with the name 'addr', a default value of ":5000"
 	// and some short help text explaining what the flag controls. The value of the
 	// flag will be stored in the addr variable at runtime.
 
-	addr := flag.String("addr", ":5000", "http service address")
+	addr := flag.String("addr", ":5000", "http network address")
 
 	// Importantly, we use the flag.Parse() function to parse the command-line flag.
 	// This reads in the command-line flag value and assigns it to the addr
@@ -49,34 +48,18 @@ func main() {
 		errorLog: errorLog,
 	}
 
-	// create a new serve mux
-	mux := http.NewServeMux()
-
-	// Create a file server which serves files out of the "./ui/static" directory.
-	// Note that the path given to the http.Dir function is relative to the project
-	// directory root.
-	fileServer := http.FileServer(http.Dir("./ui/static/"))
-
-	// Use the mux.Handle() function to register the file server as the handler for
-	// all URL paths that start with "/static/". For matching paths, we strip the
-	// "/static" prefix before the request reaches the file server.
-	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
-
-	// Register the other application routes as normal.
-	mux.HandleFunc("/", app.home)
-	mux.HandleFunc("/snippet/view", app.snippetView)
-	mux.HandleFunc("/snippet/create", app.snippetCreate)
-
 	srv := &http.Server{
 		Addr:     *addr,
 		ErrorLog: errorLog,
-		Handler:  mux,
+		// Call the new app.routes() method to get the servemux containing our routes
+		Handler:  app.routes(),
 	}
 
 	// The value returned from the flag.String() function is a pointer to the flag
 	// value, not the value itself. So we need to dereference the pointer (i.e.
 	// prefix it with the * symbol) before using it. Note that we're using the
 	// log.Printf() function to interpolate the address with the log message.
+
 	// log.Printf("Starting server on %s", *addr)
 
 	// Write messages using the two new loggers, instead of the standard logger.
