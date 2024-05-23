@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 	_ "github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 )
 

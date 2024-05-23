@@ -1,16 +1,21 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"text/template"
+
 	// "html/template"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		app.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 
@@ -53,7 +58,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
-		app.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 
@@ -63,11 +68,31 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	snippet, err := app.snippets.Get(id)
 	if err != nil {
 		if errors.Is(err, models.ErrNoRecord) {
-			app.NotFound(w, r)
+			app.notFound(w)
 		} else {
 			app.serverError(w, err)
 		}
 		return
+	}
+
+	// Initialize a slice containing the paths to the view.tmpl file,
+	// plus the base layout and navigation partial that we made earlier.
+	files := []string{
+		"./ui/html/base.tmpl.html",
+		"./ui/html/partials/nav.tmpl.html",
+		"./ui/html/pages/view.tmpl.html",
+	}
+	// Parse the template files...
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	// And then execute them. Notice how we are passing in the snippet
+	// data (a models.Snippet struct) as the final parameter?
+	err = ts.ExecuteTemplate(w, "base", snippet)
+	if err != nil {
+		app.serverError(w, err)
 	}
 
 	// Write the snippet data as a plain-text HTTP response body
@@ -78,7 +103,7 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", http.MethodPost)
-		app.clientError(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		app.clientError(w, "Method Not Allowed")
 		return
 	}
 	w.Write([]byte("Create a new snippet..."))

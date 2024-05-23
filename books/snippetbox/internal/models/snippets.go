@@ -137,7 +137,7 @@ func (m *SnippetModel) Latest() ([]*Snippet, error) {
 		// Append it to the slice of snippets.
 		snippets = append(snippets, s)
 	}
-	
+
 	// When the rows.Next() loop has finished we call rows.Err() to retrieve any
 	// error that was encountered during the iteration. It's important to
 	// call this - don't assume that a successful iteration was completed
