@@ -3,13 +3,11 @@ package main
 import (
 	"errors"
 	"fmt"
-	"text/template"
-
+	"html/template"
 	// "html/template"
-	"log"
+	// "log"
 	"net/http"
 	"strconv"
-
 	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 )
 
@@ -88,6 +86,18 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
+
+	// Create an instance of a templateData struct holding the snippet data.
+	data := &templateData{
+		Snippet: snippet,
+	}
+
+	// Pass in the templateData struct when executing the template.
+	err = ts.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		app.serverError(w, err)
+	}
+
 	// And then execute them. Notice how we are passing in the snippet
 	// data (a models.Snippet struct) as the final parameter?
 	err = ts.ExecuteTemplate(w, "base", snippet)
@@ -103,7 +113,7 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", http.MethodPost)
-		app.clientError(w, "Method Not Allowed")
+		app.clientError(w, http.StatusMethodNotAllowed)
 		return
 	}
 	w.Write([]byte("Create a new snippet..."))
