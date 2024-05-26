@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -20,6 +21,7 @@ type application struct {
 	infoLog  *log.Logger
 	errorLog *log.Logger
 	snippets *models.SnippetModel
+	templateCache map[string]*template.Template
 }
 
 func main() {
@@ -64,13 +66,21 @@ func main() {
 	// before the main() function exits.
 	defer db.Close()
 
+	// Initialize a new template cache...
+	templateCache,err:=newTemplateCache()
+	if err!=nil{
+		errorLog.Fatal(err)
+	}
+
 	// Initialize a new instance of application containing the dependencies.
 	// Initialize a models.SnippetModel instance and add it to the application
 	// dependencies
+	// And add it to the application dependencies. (templateCache)
 	app := &application{
 		infoLog:  infoLog,
 		errorLog: errorLog,
 		snippets: &models.SnippetModel{DB: db},
+		templateCache:templateCache,
 	}
 
 	srv := &http.Server{

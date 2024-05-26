@@ -4,11 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+
 	// "html/template"
 	// "log"
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 	"net/http"
 	"strconv"
+
+	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -22,6 +24,12 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
+
+
+	// Use the new render helper.
+	app.render(w,http.StatusOK, "home.tmpl.html", &templateData{
+		Snippets:snippets,
+	})
 
 	files := []string{
 		"./ui/html/base.tmpl",
@@ -98,6 +106,12 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+
+	// Use the new render helper.
+	app.render(w, http.StatusOK, "view.tmpl.html", &templateData{
+		Snippet: snippet,
+		})
+	   
 	// Initialize a slice containing the paths to the view.tmpl file,
 	// plus the base layout and navigation partial that we made earlier.
 	files := []string{
