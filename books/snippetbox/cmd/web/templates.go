@@ -4,7 +4,6 @@ import (
 	"html/template"
 	"path/filepath"
 	"time"
-
 	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 )
 
@@ -17,6 +16,7 @@ type templateData struct {
 	Snippet    *models.Snippet
 	// Include a Snippets field in the templateData struct
 	Snippets []*models.Snippet
+	Form any
 }
 
 // Create a humanDate function which returns a nicely formatted string
@@ -51,10 +51,10 @@ func newTemplateCache() (map[string]*template.Template, error) {
 		// and assign it to the name variable.
 		name := filepath.Base(page)
 
-// The template.FuncMap must be registered with the template set before you
- // call the ParseFiles() method. This means we have to use template.New() to
- // create an empty template set, use the Funcs() method to register the
- // template.FuncMap, and then parse the file as normal.
+		// The template.FuncMap must be registered with the template set before you
+		// call the ParseFiles() method. This means we have to use template.New() to
+		// create an empty template set, use the Funcs() method to register the
+		// template.FuncMap, and then parse the file as normal.
 
 		ts, err := template.New(name).Funcs(functions).ParseFiles("./ui/html/base.tmpl.html")
 		if err != nil {
