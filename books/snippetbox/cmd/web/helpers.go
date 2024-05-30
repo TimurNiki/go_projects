@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 	"runtime/debug"
+	"time"
 )
 
 func (app *application) serverError(w http.ResponseWriter, err error) {
@@ -42,15 +44,37 @@ func (app *application) render(w http.ResponseWriter, status int, page string, d
 		return
 	}
 
+	// Initialize a new buffer.
+	buf := new(bytes.Buffer)
+
+	// Write the template to the buffer, instead of straight to the
+	// http.ResponseWriter. If there's an error, call our serverError() helper
+	// and then return.
+	err := ts.ExecuteTemplate(buf, "base", data)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
 	// Write out the provided HTTP status code ('200 OK', '400 Bad Request'
 	// etc).
 	w.WriteHeader(status)
 
+	buf.WriteTo(w)
+
 	// Execute the template set and write the response body. Again, if there
 	// is any error we call the the serverError() helper.
-	err := ts.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		app.serverError(w, err)
+	// err := ts.ExecuteTemplate(w, "base", data)
+	// if err != nil {
+	// 	app.serverError(w, err)
 
-	}
+	// }
+}
+
+// Create an newTemplateData() helper, which returns a pointer to a templateData
+// struct initialized with the current year. Note that we're not using the
+// *http.Request parameter here at the moment, but we will do later in the book.
+func (app *application) newTemplateData (r *http.Request) *templateData {
+
+	return &templateData{CurrenYear:time.Now().Year()}
 }

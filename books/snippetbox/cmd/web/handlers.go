@@ -2,9 +2,8 @@ package main
 
 import (
 	"errors"
-	"fmt"
-	"html/template"
-
+	// "fmt"
+	// "html/template"
 	// "html/template"
 	// "log"
 	"net/http"
@@ -25,35 +24,38 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Call the newTemplateData() helper to get a templateData struct containing
+	// the 'default' data (which for now is just the current year), and add the
+	// snippets slice to it.
+	data := app.newTemplateData(r)
+	data.Snippets = snippets
 
 	// Use the new render helper.
-	app.render(w,http.StatusOK, "home.tmpl.html", &templateData{
-		Snippets:snippets,
-	})
+	app.render(w, http.StatusOK, "home.tmpl.html", data)
 
-	files := []string{
-		"./ui/html/base.tmpl",
-		"./ui/html/partials/nav.tmpl",
-		"./ui/html/pages/home.tmpl",
-	}
+	// files := []string{
+	// 	"./ui/html/base.tmpl",
+	// 	"./ui/html/partials/nav.tmpl",
+	// 	"./ui/html/pages/home.tmpl",
+	// }
 
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
+	// ts, err := template.ParseFiles(files...)
+	// if err != nil {
+	// 	app.serverError(w, err)
+	// 	return
+	// }
 
-	// Create an instance of a templateData struct holding the slice of
-	// snippets.
-	data := &templateData{
-		Snippets: snippets,
-	}
+	// // Create an instance of a templateData struct holding the slice of
+	// // snippets.
+	// data := &templateData{
+	// 	Snippets: snippets,
+	// }
 
-	// Pass in the templateData struct when executing the template.
-	err = ts.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		app.serverError(w, err)
-	}
+	// // Pass in the templateData struct when executing the template.
+	// err = ts.ExecuteTemplate(w, "base", data)
+	// if err != nil {
+	// 	app.serverError(w, err)
+	// }
 
 	// for _, snippet := range snippets {
 	// 	fmt.Fprintf(w, "%+v\n", snippet)
@@ -106,48 +108,48 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	data := app.newTemplateData(r)
+	data.Snippet = snippet
 
 	// Use the new render helper.
-	app.render(w, http.StatusOK, "view.tmpl.html", &templateData{
-		Snippet: snippet,
-		})
-	   
+	app.render(w, http.StatusOK, "view.tmpl.html", data)
+
 	// Initialize a slice containing the paths to the view.tmpl file,
 	// plus the base layout and navigation partial that we made earlier.
-	files := []string{
-		"./ui/html/base.tmpl.html",
-		"./ui/html/partials/nav.tmpl.html",
-		"./ui/html/pages/view.tmpl.html",
-	}
-	// Parse the template files...
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
+	// files := []string{
+	// 	"./ui/html/base.tmpl.html",
+	// 	"./ui/html/partials/nav.tmpl.html",
+	// 	"./ui/html/pages/view.tmpl.html",
+	// }
+	// // Parse the template files...
+	// ts, err := template.ParseFiles(files...)
+	// if err != nil {
+	// 	app.serverError(w, err)
+	// 	return
+	// }
 
-	// Create an instance of a templateData struct holding the snippet data.
-	data := &templateData{
-		Snippet: snippet,
-	}
+	// // Create an instance of a templateData struct holding the snippet data.
+	// data := &templateData{
+	// 	Snippet: snippet,
+	// }
 
-	// Pass in the templateData struct when executing the template.
-	err = ts.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		app.serverError(w, err)
-	}
+	// // Pass in the templateData struct when executing the template.
+	// err = ts.ExecuteTemplate(w, "base", data)
+	// if err != nil {
+	// 	app.serverError(w, err)
+	// }
 
-	// And then execute them. Notice how we are passing in the snippet
-	// data (a models.Snippet struct) as the final parameter?
-	err = ts.ExecuteTemplate(w, "base", snippet)
-	if err != nil {
-		app.serverError(w, err)
-	}
+	// // And then execute them. Notice how we are passing in the snippet
+	// // data (a models.Snippet struct) as the final parameter?
+	// err = ts.ExecuteTemplate(w, "base", snippet)
+	// if err != nil {
+	// 	app.serverError(w, err)
+	// }
 
-	// Write the snippet data as a plain-text HTTP response body
-	fmt.Fprintf(w, "%+v", snippet)
+	// // Write the snippet data as a plain-text HTTP response body
+	// fmt.Fprintf(w, "%+v", snippet)
 
-	fmt.Fprintf(w, "Display a specific snippet with ID %d...", id)
+	// fmt.Fprintf(w, "Display a specific snippet with ID %d...", id)
 }
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
