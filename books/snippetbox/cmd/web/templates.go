@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 	"html/template"
 	"path/filepath"
 	"time"
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 )
 
 // Define a templateData type to act as the holding structure for
@@ -16,7 +16,7 @@ type templateData struct {
 	Snippet    *models.Snippet
 	// Include a Snippets field in the templateData struct
 	Snippets []*models.Snippet
-	Form any
+	Form     any
 }
 
 // Create a humanDate function which returns a nicely formatted string

@@ -18,9 +18,9 @@ import (
 // Add a snippets field to the application struct. This will allow us to
 // make the SnippetModel object available to our handlers.
 type application struct {
-	infoLog  *log.Logger
-	errorLog *log.Logger
-	snippets *models.SnippetModel
+	infoLog       *log.Logger
+	errorLog      *log.Logger
+	snippets      *models.SnippetModel
 	templateCache map[string]*template.Template
 }
 
@@ -67,8 +67,8 @@ func main() {
 	defer db.Close()
 
 	// Initialize a new template cache...
-	templateCache,err:=newTemplateCache()
-	if err!=nil{
+	templateCache, err := newTemplateCache()
+	if err != nil {
 		errorLog.Fatal(err)
 	}
 
@@ -77,10 +77,10 @@ func main() {
 	// dependencies
 	// And add it to the application dependencies. (templateCache)
 	app := &application{
-		infoLog:  infoLog,
-		errorLog: errorLog,
-		snippets: &models.SnippetModel{DB: db},
-		templateCache:templateCache,
+		infoLog:       infoLog,
+		errorLog:      errorLog,
+		snippets:      &models.SnippetModel{DB: db},
+		templateCache: templateCache,
 	}
 
 	srv := &http.Server{
