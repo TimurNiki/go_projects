@@ -1,9 +1,10 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
-	"net/http"
 )
 
 func (app *application) routes() http.Handler {
@@ -25,15 +26,26 @@ func (app *application) routes() http.Handler {
 	// Note that the path given to the http.Dir function is relative to the project
 	// directory root.
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
+
 	// Update the pattern for the route for the static files.
 	router.Handler(http.MethodGet, "/static/*filepath", http.StripPrefix("/static", fileServer))
 
+	// Create a new middleware chain containing the middleware specific to our
+	// dynamic application routes. For now, this chain will only contain the
+	// LoadAndSave session middleware but we'll add more to it later.
+	dynamic := alice.New(app.sessionManager.LoadAndSave)
+
 	// And then create the routes using the appropriate methods, patterns and
 	// handlers.
-	router.HandlerFunc(http.MethodGet, "/", app.home)
-	router.HandlerFunc(http.MethodGet, "/snippet/view/:id", app.snippetView)
-	router.HandlerFunc(http.MethodGet, "/snippet/create", app.snippetCreate)
-	router.HandlerFunc(http.MethodPost, "/snippet/create", app.snippetCreatePost)
+
+	 // Update these routes to use the new dynamic middleware chain followed by
+ // the appropriate handler function. Note that because the alice ThenFunc()
+ // method returns a http.Handler (rather than a http.HandlerFunc) we also
+ // need to switch to registering the route using the router.Handler() method
+	router.HandlerFunc(http.MethodGet, "/", dynamic.ThenFunc(app.home))
+	router.HandlerFunc(http.MethodGet, "/snippet/view/:id", dynamic.ThenFunc(app.snippetView))
+	router.HandlerFunc(http.MethodGet, "/snippet/create", dynamic.ThenFunc(app.snippetCreate))
+	router.HandlerFunc(http.MethodPost, "/snippet/create", dynamic.ThenFunc(app.snippetCreatePost))
 
 	// Use the mux.Handle() function to register the file server as the handler for
 	// all URL paths that start with "/static/". For matching paths, we strip the

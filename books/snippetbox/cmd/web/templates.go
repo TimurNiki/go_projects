@@ -17,6 +17,7 @@ type templateData struct {
 	// Include a Snippets field in the templateData struct
 	Snippets []*models.Snippet
 	Form     any
+	Flash string
 }
 
 // Create a humanDate function which returns a nicely formatted string

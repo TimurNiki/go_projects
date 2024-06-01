@@ -1,17 +1,20 @@
 package main
 
 import (
+	"crypto/rand"
 	"errors"
 	"strings"
 	"unicode/utf8"
+
 	// "html/template"
 	// "log"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/validator"
 	"github.com/julienschmidt/httprouter"
-	"net/http"
-	"strconv"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -129,6 +132,12 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Use the PopString() method to retrieve the value for the "flash" key.
+ // PopString() also deletes the key and value from the session data, so it
+ // acts like a one-time fetch. If there is no matching key in the session
+ // data this will return the empty string
+	// flash:= app.sessionManager.PopString(r.Context(), "flash")
+
 	data := app.newTemplateData(r)
 	data.Snippet = snippet
 
@@ -197,20 +206,20 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 
 }
 
-//* Define a snippetCreateForm struct to represent the form data and validation
+// * Define a snippetCreateForm struct to represent the form data and validation
 // errors for the form fields. Note that all the struct fields are deliberately
 // exported (i.e. start with a capital letter). This is because struct fields
 // must be exported in order to be read by the html/template package when
 // rendering the template.
-//* Update our snippetCreateForm struct to include struct tags which tell the
+// * Update our snippetCreateForm struct to include struct tags which tell the
 // decoder how to map HTML form values into the different struct fields. So, for
 // example, here we're telling the decoder to store the value from the HTML form
 // input with the name "title" in the Title field. The struct tag `form:"-"`
 // tells the decoder to completely ignore a field during decoding.
 type snippetCreateForm struct {
-	Title string `form:"title"`
+	Title   string `form:"title"`
 	Content string `form:"content"`
-	Expires int `form:"expires"`
+	Expires int    `form:"expires"`
 	// FieldErrors map[string]string
 	// Remove the explicit FieldErrors struct field and instead embed the Validator
 	// type. Embedding this means that our snippetCreateForm "inherits" all the
@@ -224,16 +233,16 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 	// to the r.PostForm map. This also works in the same way for PUT and PATCH
 	// requests. If there are any errors, we use our app.ClientError() helper to
 	// send a 400 Bad Request response to the user.
-	err := r.ParseForm()
-	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
-		return
-	}
+	// err := r.ParseForm()
+	// if err != nil {
+	// 	app.clientError(w, http.StatusBadRequest)
+	// 	return
+	// }
 
 	var form snippetCreateForm
 
-	err = app.formDecoder.Decode(&form, r.PostForm)
-	if err!=nil{
+	err = app.decodePostForm(r, &form)
+	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
 	}
@@ -274,20 +283,25 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 	form.CheckField(validator.NotBlank(form.Content), "content", "This field cannot be blank")
 	form.CheckField(validator.PermittedInt(form.Expires, 1, 7, 365), "expires", "This field must equal 1, 7 or 365")
 
- // Use the Valid() method to see if any of the checks failed. If they did,
- // then re-render the template passing in the form in the same way as
- // before.
-	if !form.Valid(){
-		data:=app.newTemplateData(r)
-		data.Form=form
-		app.render(w,http.StatusUnprocessableEntity,"create.tmpl.html",data)
+	// Use the Valid() method to see if any of the checks failed. If they did,
+	// then re-render the template passing in the form in the same way as
+	// before.
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.render(w, http.StatusUnprocessableEntity, "create.tmpl.html", data)
 		return
 	}
+	
 	id, err := app.snippets.Insert(form.Title, form.Content, form.Expires)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
+	// Use the Put() method to add a string value ("Snippet successfully
+ // created!") and the corresponding key ("flash") to the session data
+	app.sessionManager.Put(r.Content(), "flash", "Snippet successfully created!")
+
 	// Redirect the user to the relevant page for the snippet.
 	http.Redirect(w, r, fmt.Sprintf("/snippet/%d", id), http.StatusSeeOther)
 

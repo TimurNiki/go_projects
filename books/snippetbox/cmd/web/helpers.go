@@ -76,7 +76,8 @@ func (app *application) render(w http.ResponseWriter, status int, page string, d
 // struct initialized with the current year. Note that we're not using the
 // *http.Request parameter here at the moment, but we will do later in the book.
 func (app *application) newTemplateData(r *http.Request) *templateData {
-	return &templateData{CurrenYear: time.Now().Year()}
+	return &templateData{CurrenYear: time.Now().Year(),
+		Flash: app.sessionManager.PopString(r.Context(), "flash")}
 }
 
 // Create a new decodePostForm() helper method. The second parameter here, dst,
@@ -100,7 +101,7 @@ func (app *application) decodePostForm(r *http.Request, dst any) error {
 		if errors.As(err, &invalidDecoderError) {
 			panic(err)
 		}
-		 // For all other errors, we return them as normal.
+		// For all other errors, we return them as normal.
 		return err
 	}
 	return nil
