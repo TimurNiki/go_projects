@@ -38,14 +38,20 @@ func (app *application) routes() http.Handler {
 	// And then create the routes using the appropriate methods, patterns and
 	// handlers.
 
-	 // Update these routes to use the new dynamic middleware chain followed by
- // the appropriate handler function. Note that because the alice ThenFunc()
- // method returns a http.Handler (rather than a http.HandlerFunc) we also
- // need to switch to registering the route using the router.Handler() method
+	// Update these routes to use the new dynamic middleware chain followed by
+	// the appropriate handler function. Note that because the alice ThenFunc()
+	// method returns a http.Handler (rather than a http.HandlerFunc) we also
+	// need to switch to registering the route using the router.Handler() method
 	router.HandlerFunc(http.MethodGet, "/", dynamic.ThenFunc(app.home))
 	router.HandlerFunc(http.MethodGet, "/snippet/view/:id", dynamic.ThenFunc(app.snippetView))
 	router.HandlerFunc(http.MethodGet, "/snippet/create", dynamic.ThenFunc(app.snippetCreate))
 	router.HandlerFunc(http.MethodPost, "/snippet/create", dynamic.ThenFunc(app.snippetCreatePost))
+
+	router.HandlerFunc(http.MethodGet, "/user/signup", dynamic.ThenFunc(app.userSignUp))
+	router.HandlerFunc(http.MethodPost, "/user/signup", dynamic.ThenFunc(app.userSignUpPost))
+	router.HandlerFunc(http.MethodGet, "/user/login", dynamic.ThenFunc(app.userLogin))
+	router.HandlerFunc(http.MethodPost, "/user/login", dynamic.ThenFunc(app.userLoginPost))
+	router.HandlerFunc(http.MethodPost, "/user/logout", dynamic.ThenFunc(app.userLogoutPost))
 
 	// Use the mux.Handle() function to register the file server as the handler for
 	// all URL paths that start with "/static/". For matching paths, we strip the

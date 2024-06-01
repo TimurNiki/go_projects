@@ -3,12 +3,13 @@ package main
 import (
 	"database/sql"
 	"flag"
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
-	"github.com/go-playground/form/v4"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
+	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
+	"github.com/alexedwards/scs/v2"
+	"github.com/go-playground/form/v4"
 )
 
 // Define an application struct to hold the application-wide dependencies for the
@@ -20,6 +21,7 @@ type application struct {
 	infoLog        *log.Logger
 	errorLog       *log.Logger
 	snippets       *models.SnippetModel
+	users          *models.UserModel
 	templateCache  map[string]*template.Template
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
@@ -93,9 +95,11 @@ func main() {
 	// dependencies
 	// And add it to the application dependencies. (templateCache)
 	app := &application{
-		infoLog:        infoLog,
-		errorLog:       errorLog,
-		snippets:       &models.SnippetModel{DB: db},
+		infoLog:  infoLog,
+		errorLog: errorLog,
+		snippets: &models.SnippetModel{DB: db},
+		users: &models.UserModel{
+			DB: db},
 		templateCache:  templateCache,
 		sessionManager: sessionManager,
 	}
@@ -115,7 +119,7 @@ func main() {
 		Handler: app.routes(),
 		// TLSConfig: tlsConfig,
 		// Add Idle, Read and Write timeouts to the server.
-		IdleTimeout: time.Minute,
+		IdleTimeout:  time.Minute,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}

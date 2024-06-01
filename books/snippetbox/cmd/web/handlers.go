@@ -14,6 +14,7 @@ import (
 
 	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/validator"
+	"github.com/go-playground/form/v4"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -133,9 +134,9 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Use the PopString() method to retrieve the value for the "flash" key.
- // PopString() also deletes the key and value from the session data, so it
- // acts like a one-time fetch. If there is no matching key in the session
- // data this will return the empty string
+	// PopString() also deletes the key and value from the session data, so it
+	// acts like a one-time fetch. If there is no matching key in the session
+	// data this will return the empty string
 	// flash:= app.sessionManager.PopString(r.Context(), "flash")
 
 	data := app.newTemplateData(r)
@@ -292,14 +293,14 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 		app.render(w, http.StatusUnprocessableEntity, "create.tmpl.html", data)
 		return
 	}
-	
+
 	id, err := app.snippets.Insert(form.Title, form.Content, form.Expires)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 	// Use the Put() method to add a string value ("Snippet successfully
- // created!") and the corresponding key ("flash") to the session data
+	// created!") and the corresponding key ("flash") to the session data
 	app.sessionManager.Put(r.Content(), "flash", "Snippet successfully created!")
 
 	// Redirect the user to the relevant page for the snippet.
@@ -357,4 +358,78 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 	//  }
 	// Update the redirect path to use the new clean URL format.
 	// http.Redirect(w, r, fmt.Sprintf("/snippet/%d", id), http.StatusSeeOther)
+}
+
+type userSignupForm struct {
+	Name                string `form:"name"`
+	Email               string `form:"email"`
+	Password            string `form:"password"`
+	validator.Validator `form:"-"`
+}
+
+func (app *application) userSignUp(w http.ResponseWriter, r *http.Request) {
+	data := app.newTemplateData(r)
+	data.Form = userSignupForm{}
+	app.render(w, http.StatusOK, "signup.tmpl", data)
+}
+
+func (app *application) userSignUpPost(w http.ResponseWriter, r *http.Request) {
+	// Declare an zero-valued instance of our userSignupForm struct.
+	var form userSignupForm
+
+	// Parse the form data into the userSignupForm struct.
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	// Validate the form contents using our helper functions.
+	form.CheckField(validator.NotBlank(form.Name), "name", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.Email), "email", "This field cannot be blank")
+	form.CheckField(validator.Matches(form.Email, validator.EmailRX), "email", "This field must be a valid email address")
+	form.CheckField(validator.NotBlank(form.Password), "password", "This field cannot be blank")
+	form.CheckField(validator.MinChars(form.Password, 8), "password", "This field must be at least 8 characters long")
+
+	// If there are any errors, redisplay the signup form along with a 422
+	// status code.
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.render(w, http.StatusUnprocessableEntity, "signup.tmpl", data)
+		return
+	}
+
+	// Try to create a new user record in the database. If the email already
+	// exists then add an error message to the form and re-display it.
+	err = app.Users.Insert(form.Name, form.Email, form.Password)
+	if err != nil {
+		if errors.Is(err, models.ErrDuplicateEmail) {
+			form.AddFieldError("email", "Email address is already in use")
+			data := app.newTemplateData(r)
+			data.Form = form
+			app.render(w, http.StatusUnprocessableEntity, "signup.tmpl.html", data)
+		} else {
+			app.serverError(w, err)
+		}
+	}
+	
+	// Otherwise add a confirmation flash message to the session confirming that
+	// their signup worked.
+	app.sessionManager.Put(r.Context(), "flash", "Your signup was successful. Please log in.")
+	// And redirect the user to the login page.
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+
+}
+
+func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
+
 }
