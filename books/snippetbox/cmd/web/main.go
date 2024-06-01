@@ -7,9 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-
+	"github.com/go-playground/form/v4"
 	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
-	_ "github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 )
 
 // Define an application struct to hold the application-wide dependencies for the
@@ -22,14 +21,14 @@ type application struct {
 	errorLog      *log.Logger
 	snippets      *models.SnippetModel
 	templateCache map[string]*template.Template
+	formDecoder *form.Decoder
+
 }
 
 func main() {
-
 	// Define a new command-line flag with the name 'addr', a default value of ":5000"
 	// and some short help text explaining what the flag controls. The value of the
 	// flag will be stored in the addr variable at runtime.
-
 	addr := flag.String("addr", ":5000", "http network address")
 
 	// Define a new command-line flag for the MySQL DSN string.
@@ -71,6 +70,9 @@ func main() {
 	if err != nil {
 		errorLog.Fatal(err)
 	}
+
+	// Initialize a decoder instance...
+	formDecoder := form.NewDecoder()
 
 	// Initialize a new instance of application containing the dependencies.
 	// Initialize a models.SnippetModel instance and add it to the application
