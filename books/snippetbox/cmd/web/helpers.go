@@ -76,8 +76,12 @@ func (app *application) render(w http.ResponseWriter, status int, page string, d
 // struct initialized with the current year. Note that we're not using the
 // *http.Request parameter here at the moment, but we will do later in the book.
 func (app *application) newTemplateData(r *http.Request) *templateData {
-	return &templateData{CurrenYear: time.Now().Year(),
-		Flash: app.sessionManager.PopString(r.Context(), "flash")}
+	return &templateData{
+		CurrentYear: time.Now().Year(),
+		Flash: app.sessionManager.PopString(r.Context(), "flash"),
+		// Add the authentication status to the template data.
+		IsAuthenticated: app.isAuthenticated(r),
+		}
 }
 
 // Create a new decodePostForm() helper method. The second parameter here, dst,
@@ -106,3 +110,10 @@ func (app *application) decodePostForm(r *http.Request, dst any) error {
 	}
 	return nil
 }
+
+// Return true if the current request is from an authenticated user, otherwise
+// return false.
+func (app *application) isAuthenticated(r *http.Request) bool {
+	return app.sessionManager.Exists(r.Context(), "authenticatedUserID")
+   }
+   
