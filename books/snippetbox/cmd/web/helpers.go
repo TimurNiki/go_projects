@@ -81,6 +81,7 @@ func (app *application) newTemplateData(r *http.Request) *templateData {
 		Flash: app.sessionManager.PopString(r.Context(), "flash"),
 		// Add the authentication status to the template data.
 		IsAuthenticated: app.isAuthenticated(r),
+		CSRFToken: nosurf.Token(r),
 		}
 }
 
@@ -114,6 +115,12 @@ func (app *application) decodePostForm(r *http.Request, dst any) error {
 // Return true if the current request is from an authenticated user, otherwise
 // return false.
 func (app *application) isAuthenticated(r *http.Request) bool {
-	return app.sessionManager.Exists(r.Context(), "authenticatedUserID")
+	// return app.sessionManager.Exists(r.Context(), "authenticatedUserID")
+	isAuthenticated, ok:=r.Context().Value(contextKeyIsAuthenticated).(bool)
+	if !ok {
+		return false
+	}
+	return isAuthenticated
    }
+
    

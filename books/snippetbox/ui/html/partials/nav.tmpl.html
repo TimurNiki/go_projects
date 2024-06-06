@@ -10,7 +10,9 @@
     <div>
         <!-- Toggle the links based on authentication status -->
         {{if .IsAuthenticated}}
-        <form action='/user/logout' method='POST'>
+        <form action='/user/logout' method='POST'></form>
+            <!-- Include the CSRF token -->
+            <input type='hidden' name='csrf_token' value='{{.CSRFToken}}'>
             <button>Logout</button>
         </form>
         {{else}}
