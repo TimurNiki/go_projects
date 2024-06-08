@@ -30,6 +30,7 @@ require (
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
+	nhooyr.io/websocket v1.8.11 // indirect
 )
 
 require (
