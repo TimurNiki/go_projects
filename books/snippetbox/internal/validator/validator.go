@@ -60,15 +60,27 @@ func (v *Validator) MaxChars(value string, n int) bool {
 	return utf8.RuneCountInString(value) <= n
 }
 
-// PermittedInt() returns true if a value is in a list of permitted integers.
-func PermittedInt(value int, permittedValues ...int) bool {
+
+// Replace PermittedInt() with a generic PermittedValue() function. This returns
+// true if the value of type T equals one of the variadic permittedValues
+// parameters.
+func PermittedValue[T comparable](value T, permittedValues ...T) bool {
 	for i := range permittedValues {
-		if value == permittedValues[i] {
-			return true
-		}
+	if value == permittedValues[i] {
+	return true
+	}
 	}
 	return false
-}
+   }
+// PermittedInt() returns true if a value is in a list of permitted integers.
+// func PermittedInt(value int, permittedValues ...int) bool {
+// 	for i := range permittedValues {
+// 		if value == permittedValues[i] {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
 
 // Use the regexp.MustCompile() function to parse a regular expression pattern
 // for sanity checking the format of an email address. This returns a pointer to
