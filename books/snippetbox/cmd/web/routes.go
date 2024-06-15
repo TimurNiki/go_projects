@@ -46,6 +46,10 @@ func (app *application) routes() http.Handler {
 	// LoadAndSave session middleware but we'll add more to it later.
 	dynamic := alice.New(app.sessionManager.LoadAndSave, noSurf, app.authenticate)
 
+
+	 // Add a new GET /ping route.
+	 router.HandlerFunc(http.MethodGet, "/ping", ping)
+
 	// And then create the routes using the appropriate methods, patterns and
 	// handlers.
 
