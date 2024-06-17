@@ -3,13 +3,13 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
+	"github.com/alexedwards/scs/v2"
+	"github.com/go-playground/form/v4"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
-	"github.com/alexedwards/scs/v2"
-	"github.com/go-playground/form/v4"
 )
 
 // Define an application struct to hold the application-wide dependencies for the
@@ -18,10 +18,12 @@ import (
 // Add a snippets field to the application struct. This will allow us to
 // make the SnippetModel object available to our handlers.
 type application struct {
-	infoLog        *log.Logger
-	errorLog       *log.Logger
-	snippets       *models.SnippetModel
-	users          *models.UserModel
+	infoLog  *log.Logger
+	errorLog *log.Logger
+	snippets models.SnippetModelInterface // Use our new interface type.
+	users    models.UserModelInterface    // Use our new interface type.
+	// snippets       *models.SnippetModel
+	// users          *models.UserModel
 	templateCache  map[string]*template.Template
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
