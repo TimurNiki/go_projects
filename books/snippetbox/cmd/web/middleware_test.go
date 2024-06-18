@@ -1,11 +1,11 @@
 package main
-import (
- "bytes"
- "io"
- "net/http"
- "net/http/httptest"
- "testing"
 
+import (
+	"bytes"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 )
 
 func TestSecureHeaders(t *testing.T) {
@@ -13,12 +13,12 @@ func TestSecureHeaders(t *testing.T) {
 	rr := httptest.NewRecorder()
 	r, err := http.NewRequest(http.MethodGet, "/", nil)
 	if err != nil {
-	t.Fatal(err)
+		t.Fatal(err)
 	}
 	// Create a mock HTTP handler that we can pass to our secureHeaders
 	// middleware, which writes a 200 status code and an "OK" response body.
 	next := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("OK"))
+		w.Write([]byte("OK"))
 	})
 	// Pass the mock HTTP handler to our secureHeaders middleware. Because
 	// secureHeaders *returns* a http.Handler we can call its ServeHTTP()
@@ -55,9 +55,9 @@ func TestSecureHeaders(t *testing.T) {
 	defer rs.Body.Close()
 	body, err := io.ReadAll(rs.Body)
 	if err != nil {
-	t.Fatal(err)
+		t.Fatal(err)
 	}
 	bytes.TrimSpace(body)
-   
+
 	assert.Equal(t, string(body), "OK")
-   }
+}

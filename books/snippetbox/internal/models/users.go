@@ -12,8 +12,8 @@ type UserModelInterface interface {
 	Insert(name, email, password string) error
 	Authenticate(email, password string) (int, error)
 	Exists(id int) (bool, error)
-   }
-   
+}
+
 type User struct {
 	ID             int
 	Name           string
@@ -97,4 +97,4 @@ func (m *UserModel) Exists(id int) (bool, error) {
 	stmt := "SELECT EXISTS(SELECT true FROM users WHERE id = ?)"
 	err := m.DB.QueryRow(stmt, id).Scan(&exists)
 	return exists, err
-   }
+}
