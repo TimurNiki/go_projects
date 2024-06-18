@@ -15,6 +15,14 @@ func (app *application) serverError(w http.ResponseWriter, err error) {
 	// then sends a generic 500 Internal Server Error response to the user.
 	trace := fmt.Sprint("%s\n%s", err.Error(), debug.Stack())
 	app.errorLog.Output(2, trace)
+
+	// Go to the cmd/web/helpers.go file and update the serverError() helper so that it renders a
+	//detailed error message and stack trace in a HTTP response if — and only if — the debug flag
+	// has been set. Otherwise send a generic error message as normal.
+	if app.debug {
+		http.Error(w, trace, http.StatusInternalServerError)
+		return
+	}
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 
 }
@@ -78,11 +86,11 @@ func (app *application) render(w http.ResponseWriter, status int, page string, d
 func (app *application) newTemplateData(r *http.Request) *templateData {
 	return &templateData{
 		CurrentYear: time.Now().Year(),
-		Flash: app.sessionManager.PopString(r.Context(), "flash"),
+		Flash:       app.sessionManager.PopString(r.Context(), "flash"),
 		// Add the authentication status to the template data.
 		IsAuthenticated: app.isAuthenticated(r),
-		CSRFToken: nosurf.Token(r),
-		}
+		CSRFToken:       nosurf.Token(r),
+	}
 }
 
 // Create a new decodePostForm() helper method. The second parameter here, dst,
@@ -116,11 +124,9 @@ func (app *application) decodePostForm(r *http.Request, dst any) error {
 // return false.
 func (app *application) isAuthenticated(r *http.Request) bool {
 	// return app.sessionManager.Exists(r.Context(), "authenticatedUserID")
-	isAuthenticated, ok:=r.Context().Value(contextKeyIsAuthenticated).(bool)
+	isAuthenticated, ok := r.Context().Value(contextKeyIsAuthenticated).(bool)
 	if !ok {
 		return false
 	}
 	return isAuthenticated
-   }
-
-   
+}

@@ -3,13 +3,15 @@ package main
 import (
 	"database/sql"
 	"flag"
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
-	"github.com/alexedwards/scs/v2"
-	"github.com/go-playground/form/v4"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
+	"runtime/debug"
+
+	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
+	"github.com/alexedwards/scs/v2"
+	"github.com/go-playground/form/v4"
 )
 
 // Define an application struct to hold the application-wide dependencies for the
@@ -18,6 +20,7 @@ import (
 // Add a snippets field to the application struct. This will allow us to
 // make the SnippetModel object available to our handlers.
 type application struct {
+	debug bool
 	infoLog  *log.Logger
 	errorLog *log.Logger
 	snippets models.SnippetModelInterface // Use our new interface type.
@@ -37,6 +40,8 @@ func main() {
 
 	// Define a new command-line flag for the MySQL DSN string.
 	dsn := flag.String("dsn", "web:pass@/snippetbox?parseTime=true", "MySQL data source name")
+
+	debug:= flag.Bool("debug", false, "Enable debug mode")
 
 	// Importantly, we use the flag.Parse() function to parse the command-line flag.
 	// This reads in the command-line flag value and assigns it to the addr
@@ -97,6 +102,7 @@ func main() {
 	// dependencies
 	// And add it to the application dependencies. (templateCache)
 	app := &application{
+		debug: *debug,
 		infoLog:  infoLog,
 		errorLog: errorLog,
 		snippets: &models.SnippetModel{DB: db},

@@ -502,3 +502,11 @@ func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 	// Redirect the user to the application home page.
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+func (app *application) about(w http.ResponseWriter, r *http.Request) {
+	// Some code will go here later...
+	data := app.newTemplateData(r)
+
+	app.render(w, http.StatusOK, "about.tmpl.", data)
+
+}
