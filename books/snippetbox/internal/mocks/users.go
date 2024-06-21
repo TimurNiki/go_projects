@@ -26,3 +26,17 @@ func (m *UserModel) Exists(id int) (bool, error) {
 		return false, nil
 	}
 }
+
+func (m *UserModel) Get(id int) (*models.User, error) {
+	if id == 1 {
+		u := models.User{
+			ID:      1,
+			Name:    "Alice",
+			Email:   "alice@example.com",
+			Created: time.Now(),
+		}
+		return &u, nil
+	}
+
+	return nil, models.ErrNoRecord
+}

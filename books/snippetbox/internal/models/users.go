@@ -12,6 +12,7 @@ type UserModelInterface interface {
 	Insert(name, email, password string) error
 	Authenticate(email, password string) (int, error)
 	Exists(id int) (bool, error)
+	Get(id int) (*User, error)
 }
 
 type User struct {
@@ -97,4 +98,23 @@ func (m *UserModel) Exists(id int) (bool, error) {
 	stmt := "SELECT EXISTS(SELECT true FROM users WHERE id = ?)"
 	err := m.DB.QueryRow(stmt, id).Scan(&exists)
 	return exists, err
+}
+
+// This should accept the ID of a user as a parameter, and return a pointer to a User struct containing all the
+// information for this user (except for their hashed password, which we don’t need).
+func (m *UserModel) Get(id int) (*User, error) {
+	var user User
+
+	stmt := `SELECT id, name, email, created FROM users WHERE id = ?`
+	err := m.DB.QueryRow(stmt, id).Scan(&user.ID, &user.Name, &user.Email, &user.Created)
+	if err != nil {
+		//If no user is found with the ID, it should return an ErrNoRecord error.
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRecord
+		} else {
+			return nil, err
+		}
+
+	}
+	return &user, nil
 }
