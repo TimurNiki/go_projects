@@ -47,8 +47,8 @@ func (app *application) routes() http.Handler {
 	dynamic := alice.New(app.sessionManager.LoadAndSave, noSurf, app.authenticate)
 
 	router.HandlerFunc(http.MethodGet, "/about", dynamic.ThenFunc(app.about))
-	 // Add a new GET /ping route.
-	 router.HandlerFunc(http.MethodGet, "/ping", ping)
+	// Add a new GET /ping route.
+	router.HandlerFunc(http.MethodGet, "/ping", ping)
 
 	// And then create the routes using the appropriate methods, patterns and
 	// handlers.
@@ -71,11 +71,14 @@ func (app *application) routes() http.Handler {
 	// Protected (authenticated-only) application routes, using a new "protected"
 	// middleware chain which includes the requireAuthentication middleware.
 	protected := dynamic.Append(app.requireAuthentication)
+
 	router.Handler(http.MethodGet, "/snippet/create", protected.ThenFunc(app.snippetCreate))
 	router.Handler(http.MethodPost, "/snippet/create", protected.ThenFunc(app.snippetCreatePost))
 	router.Handler(http.MethodGet, "/user/about", protected.ThenFunc(app.accountView))
 	router.Handler(http.MethodPost, "/user/logout", protected.ThenFunc(app.userLogoutPost))
-
+	// Add the two new routes, restricted to authenticated users only.
+	router.Handler(http.MethodGet, "/account/password/update", protected.ThenFunc(app.accountPasswordUpdate))
+	router.Handler(http.MethodPost, "/account/password/update", protected.ThenFunc(app.accountPasswordUpdatePost))
 	// Use the mux.Handle() function to register the file server as the handler for
 	// all URL paths that start with "/static/". For matching paths, we strip the
 	// "/static" prefix before the request reaches the file server.
