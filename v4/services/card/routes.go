@@ -6,16 +6,16 @@ import (
 )
 
 type Handler struct {
-	store types.ProductStore
+	store      types.ProductStore
 	orderStore types.OrderStore
-	userStore types.UserStore
+	userStore  types.UserStore
 }
 
 func NewHandler(store types.ProductStore, orderStore types.OrderStore, userStore types.UserStore) *Handler {
 	return &Handler{
-		store: store,
+		store:      store,
 		orderStore: orderStore,
-		userStore: userStore,
+		userStore:  userStore,
 	}
 }
 
@@ -24,20 +24,19 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 }
 
 func (h *Handler) handleCheckout(w http.ResponseWriter, r *http.Request) {
-	userID:=auth.GetUserIDFromContext(r.Context())
+	userID := auth.GetUserIDFromContext(r.Context())
 
-// 
+	//
 	var card types.CartCheckoutPayload
 
-
-// we need to parse the request body before validating it
-// validating - checking if the payload is valid
+	// we need to parse the request body before validating it
+	// validating - checking if the payload is valid
 	if err := utils.ParseJSON(r, &card); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
 
-// explanation: we need to validate the payload before processing it
+	// explanation: we need to validate the payload before processing it
 	if err := utils.Validate.Struct(card); err != nil {
 		errors := err.(validator.ValidationErrors)
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", errors))
@@ -57,16 +56,16 @@ func (h *Handler) handleCheckout(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
-// create order
+	// create order
 	orderID, totalPrice, err := h.createOrder(products, cart.Items, userID)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
-// 
+	//
 	utils.WriteJSON(w, http.StatusOK, map[string]interface{}{
 		"total_price": totalPrice,
 		"order_id":    orderID,
 	})
-	
+
 }
