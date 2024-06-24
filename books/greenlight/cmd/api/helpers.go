@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
-	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 // Retrieve the "id" URL parameter from the current request context, then convert it to
@@ -28,15 +30,23 @@ func (app *application) readIDParam(r *http.Request) (int64, error) {
 
 }
 
+// Define an envelope type.
+type envelope map[string]any
 
 // Define a writeJSON() helper for sending responses. This takes the destination
 // http.ResponseWriter, the HTTP status code to send, the data to encode to JSON, and a
 // header map containing any additional HTTP headers we want to include in the response.
-func (app *application) writeJSON(w http.ResponseWriter, status int, data any, headers http.Header) error {
+func (app *application) writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
+	
+
+	
 	// Encode the data to JSON, returning the error if there was one.
-	js, err := json.Marshal(data)
+	// js, err := json.Marshal(data)
+	// Use the json.MarshalIndent() function so that whitespace is added to the encoded
+	// JSON. Here we use no line prefix ("") and tab indents ("\t") for each element.
+	js, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {
-	return err
+		return err
 	}
 	// Append a newline to make it easier to view in terminal applications.
 	js = append(js, '\n')
@@ -46,7 +56,7 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data any, h
 	// Note that it's OK if the provided header map is nil. Go doesn't throw an error
 	// if you try to range over (or generally, read from) a nil map.
 	for key, value := range headers {
-	w.Header()[key] = value
+		w.Header()[key] = value
 	}
 	// Add the "Content-Type: application/json" header, then write the status code and
 	// JSON response.
@@ -54,5 +64,4 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data any, h
 	w.WriteHeader(status)
 	w.Write(js)
 	return nil
-	}
-	
+}
