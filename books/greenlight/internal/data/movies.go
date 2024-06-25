@@ -17,4 +17,6 @@ type Movie struct {
 	// Runtime int32 `json:"runtime,omitempty"` // Add the omitempty directive
 	Genres  []string `json:"genres,omitempty"` // Add the omitempty directive
 	Version int32    `json:"version"`
+
+	
 }
