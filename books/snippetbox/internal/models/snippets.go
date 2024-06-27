@@ -10,8 +10,7 @@ type SnippetModelInterface interface {
 	Insert(title string, content string, expires int) (int, error)
 	Get(id int) (*Snippet, error)
 	Latest() ([]*Snippet, error)
-   }
-   
+}
 
 // Define a Snippet type to hold the data for an individual snippet. Notice how
 // the fields of the struct correspond to the fields in our MySQL snippets
