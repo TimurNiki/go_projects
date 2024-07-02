@@ -27,6 +27,8 @@ func (app *application) routes() *httprouter.Router {
 	router.HandlerFunc(http.MethodGet, "/v1/movies/:id", app.showMovieHandler)
 	// Add the route for the PUT /v1/movies/:id endpoint.
 	router.HandlerFunc(http.MethodPut, "/v1/movies/:id", app.updateMovieHandler)
+	deleteMovieHandler
+	router.HandlerFunc(http.MethodDelete, "/v1/movies/:id", app.deleteMovieHandler)
 	// Return the httprouter instance.
 
 	return router
