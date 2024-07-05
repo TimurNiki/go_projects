@@ -45,7 +45,6 @@ type application struct {
 	logger *log.Logger
 	models data.Models
 	
-
 }
 
 func main() {
@@ -151,5 +150,4 @@ func openDB(cfg config) (*sql.DB, error) {
 	}
 	// Return the sql.DB connection pool.
 	return db, nil
-
 }
