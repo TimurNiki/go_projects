@@ -31,5 +31,8 @@ func (app *application) routes() *httprouter.Router {
 	// Return the httprouter instance.
 	router.HandlerFunc(http.MethodGet, "/v1/movies", app.listMoviesHandler)
 
-	return router
+	// Wrap the router with the panic recovery middleware.
+	return app.recoverPanic(router)
+
+	// return router
 }

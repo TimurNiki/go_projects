@@ -1,12 +1,13 @@
 package data
 
 import (
+	"context"
 	"database/sql"
 	"errors"
-	"time"
-	"context"
+	"fmt"
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/validator"
 	"github.com/lib/pq"
+	"time"
 )
 
 type Movie struct {
@@ -62,12 +63,12 @@ RETURNING id, created_at, version`
 	args := []any{movie.Title, movie.Year, movie.Runtime, pq.Array(movie.Genres)}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-defer cancel()
+	defer cancel()
 	// Use the QueryRow() method to execute the SQL query on our connection pool,
 	// passing in the args slice as a variadic parameter and scanning the system-
 	// generated id, created_at and version values into the movie struct.
 	// Use QueryRowContext() and pass the context as the first argument.
-return m.DB.QueryRowContext(ctx, query, args...).Scan(&movie.ID, &movie.CreatedAt, &movie.Version)
+	return m.DB.QueryRowContext(ctx, query, args...).Scan(&movie.ID, &movie.CreatedAt, &movie.Version)
 }
 func (m MovieModel) Get(id int64) (*Movie, error) {
 	// The PostgreSQL bigserial type that we're using for the movie ID starts
@@ -88,17 +89,17 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 	// Movie struct. Importantly, notice that we need to convert the scan target for the
 	// genres column using the pq.Array() adapter function again.
 	// Importantly, update the Scan() parameters so that the pg_sleep(10) return value
-// is scanned into a []byte slice
+	// is scanned into a []byte slice
 
-// Use the context.WithTimeout() function to create a context.Context which carries a
-// 3-second timeout deadline. Note that we're using the empty context.Background()
-// as the 'parent' context.
-ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-// Importantly, use defer to make sure that we cancel the context before the Get()
-// method returns.
-defer cancel()
+	// Use the context.WithTimeout() function to create a context.Context which carries a
+	// 3-second timeout deadline. Note that we're using the empty context.Background()
+	// as the 'parent' context.
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	// Importantly, use defer to make sure that we cancel the context before the Get()
+	// method returns.
+	defer cancel()
 
-	err := m.DB.QueryRowContext(ctx,query, id).Scan(
+	err := m.DB.QueryRowContext(ctx, query, id).Scan(
 		&movie.ID,
 		&movie.CreatedAt,
 		&movie.Title,
@@ -143,15 +144,14 @@ func (m MovieModel) Update(movie *Movie) error {
 	}
 
 	// Create a context with a 3-second timeout.
-ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-defer cancel()
-
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
 	// Execute the SQL query. If no matching row could be found, we know the movie
 	// version has changed (or the record has been deleted) and we return our custom
 	// ErrEditConflict error.
-// Use QueryRowContext() and pass the context as the first argument.
-err := m.DB.QueryRowContext(ctx, query, args...).Scan(&movie.Version)
+	// Use QueryRowContext() and pass the context as the first argument.
+	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&movie.Version)
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
@@ -163,7 +163,6 @@ err := m.DB.QueryRowContext(ctx, query, args...).Scan(&movie.Version)
 	}
 	return nil
 
-	
 	// Use the QueryRow() method to execute the query, passing in the args slice as a
 	// variadic parameter and scanning the new version value into the movie struct.
 	// return m.DB.QueryRow(query, args...).Scan(&movie.Version)
@@ -180,13 +179,13 @@ func (m MovieModel) Delete(id int64) error {
 DELETE FROM movies
 WHERE id = $1`
 
-// Create a context with a 3-second timeout.
-ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-defer cancel()
+	// Create a context with a 3-second timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 	// Execute the SQL query using the Exec() method, passing in the id variable as
 	// the value for the placeholder parameter. The Exec() method returns a sql.Result
 	// object.
-	result, err := m.DB.ExecContext(ctx,query, id)
+	result, err := m.DB.ExecContext(ctx, query, id)
 	if err != nil {
 		return err
 	}
@@ -203,4 +202,113 @@ defer cancel()
 		return ErrRecordNotFound
 	}
 	return nil
+}
+
+// Create a new GetAll() method which returns a slice of movies. Although we're not
+// using them right now, we've set this up to accept the various filter parameters as
+// arguments.
+
+func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*Movie, error) {
+	// Construct the SQL query to retrieve all movie records.
+
+	query := fmt.Sprintf(`
+SELECT count(*) OVER(), id, created_at, title, year, runtime, genres, version
+FROM movies
+WHERE (to_tsvector('simple', title) @@ plainto_tsquery('simple', $1) OR $1 = '')
+AND (genres @> $2 OR $2 = '{}')
+ORDER BY %s %s, id ASC
+LIMIT $3 OFFSET $4`, filters.sortColumn(), filters.sortDirection())
+
+	// 	query := fmt.Sprintf(`
+	// SELECT id, created_at, title, year, runtime, genres, version
+	// FROM movies
+	// WHERE (to_tsvector('simple', title) @@ plainto_tsquery('simple', $1) OR $1 = '')
+	// AND (genres @> $2 OR $2 = '{}')
+	// ORDER BY %s %s, id ASC
+	// LIMIT $3 OFFSET $4`, filters.sortColumn(), filters.sortDirection())
+
+	// 	query := `
+	// SELECT id, created_at, title, year, runtime, genres, version
+	// FROM movies
+	// WHERE (LOWER(title) = LOWER($1) OR $1 = '')
+	// AND (genres @> $2 OR $2 = '{}')
+	// ORDER BY id`
+
+	// query := `
+	// SELECT id, created_at, title, year, runtime, genres, version
+	// FROM movies
+	// WHERE (to_tsvector('simple', title) @@ plainto_tsquery('simple', $1) OR $1 = '')
+	// AND (genres @> $2 OR $2 = '{}')
+	// ORDER BY id`
+	// Create a context with a 3-second timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	// As our SQL query now has quite a few placeholder parameters, let's collect the
+	// values for the placeholders in a slice. Notice here how we call the limit() and
+	// offset() methods on the Filters struct to get the appropriate values for the
+	// LIMIT and OFFSET clauses.
+	args := []any{title, pq.Array(genres), filters.limit(), filters.offset()}
+	// And then pass the args slice to QueryContext() as a variadic parameter.
+	// rows, err := m.DB.QueryContext(ctx, query, args...)
+	// if err != nil {
+	// return nil, err
+	// }
+
+	// Use QueryContext() to execute the query. This returns a sql.Rows resultset
+	// containing the result.
+	// Pass the title and genres as the placeholder parameter values.
+	// rows, err := m.DB.QueryContext(ctx, query, pq.Array(genres), title)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	rows, err := m.DB.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, Metadata{}, err // Update this to return an empty Metadata struct.
+	}
+
+	// Importantly, defer a call to rows.Close() to ensure that the resultset is closed
+	// before GetAll() returns.
+	defer rows.Close()
+
+	totalRecords := 0
+
+	movies := []*Movie{}
+	// Scan the values from the row into the Movie struct. Again, note that we're
+	// using the pq.Array() adapter on the genres field here.
+	for rows.Next() {
+		// Initialize an empty Movie struct to hold the data for an individual movie.
+		var movie Movie
+		// Scan the values from the row into the Movie struct. Again, note that we're
+		// using the pq.Array() adapter on the genres field here.
+		err := rows.Scan(
+			&totalRecords, // Scan the count from the window function into totalRecords.
+
+			&movie.ID,
+			&movie.CreatedAt,
+			&movie.Title,
+			&movie.Year,
+			&movie.Runtime,
+			pq.Array(&movie.Genres),
+			&movie.Version,
+		)
+		if err != nil {
+			return nil, Metadata{}, err
+		}
+		movies = append(movies, &movie)
+	}
+	// When the rows.Next() loop has finished, call rows.Err() to retrieve any error
+	// that was encountered during the iteration.
+	if err = rows.Err(); err != nil {
+		return nil,Metadata{}, err
+	}
+	// If everything went OK, then return the slice of movies.
+	// return movies, nil
+// Generate a Metadata struct, passing in the total record count and pagination
+// parameters from the client.
+metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
+// Include the metadata struct when returning.
+return movies, metadata, nil
+
 }
