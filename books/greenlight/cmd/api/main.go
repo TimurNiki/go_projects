@@ -142,8 +142,8 @@ func main() {
 	// to use the = operator here, instead of the := operator.
 	// Call app.serve() to start the server.
 	err = app.serve()
-	if err!=nil{
-		logger.PrintFatal(err,nil)
+	if err != nil {
+		logger.PrintFatal(err, nil)
 	}
 
 	// logger.Fatal(err)
