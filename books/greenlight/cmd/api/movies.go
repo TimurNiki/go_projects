@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/data"
@@ -44,10 +45,15 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	v := validator.New()
+
 	if data.ValidateMovie(v, movie); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
+
+	// Call the Insert() method on our movies model, passing in a pointer to the
+// validated movie struct. This will create a record in the database and update the
+// movie struct with the system-generated information.
 	err = app.models.Movies.Insert(movie)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
@@ -124,14 +130,14 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 	// Otherwise, interpolate the movie ID in a placeholder response.
 	fmt.Fprintf(w, "show the details of movie %d\n", id)
 
-	movie := data.Movie{
-		ID:        id,
-		CreatedAt: time.Now(),
-		Title:     "Casablanca",
-		Runtime:   102,
-		Genres:    []string{"drama", "romance", "war"},
-		Version:   1,
-	}
+	// movie := data.Movie{
+	// 	ID:        id,
+	// 	CreatedAt: time.Now(),
+	// 	Title:     "Casablanca",
+	// 	Runtime:   102,
+	// 	Genres:    []string{"drama", "romance", "war"},
+	// 	Version:   1,
+	// }
 
 	// Call the Get() method to fetch the data for a specific movie. We also need to
 	// use the errors.Is() function to check if it returns a data.ErrRecordNotFound

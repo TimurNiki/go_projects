@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"sync"
+	"time"
 
 	"golang.org/x/time/rate" // New import
 )
@@ -75,7 +77,7 @@ func (app *application) rateLimit(next http.Handler) http.Handler {
 		if err != nil {
 			app.serverErrorResponse(w, r, err)
 			return
-		}}
+		}
 		// Lock the mutex to prevent this code from being executed concurrently.
 		mu.Lock()
 		// Check to see if the IP address already exists in the map. If it doesn't, then
@@ -93,7 +95,7 @@ func (app *application) rateLimit(next http.Handler) http.Handler {
 		// Call the Allow() method on the rate limiter for the current IP address. If
 		// the request isn't allowed, unlock the mutex and send a 429 Too Many Requests
 		// response, just like before.
-		if !clients[ip].Allow() {
+		if !clients[ip].limiter.Allow() {
 			mu.Unlock()
 			app.rateLimitExceededResponse(w, r)
 			return
@@ -103,6 +105,7 @@ func (app *application) rateLimit(next http.Handler) http.Handler {
 		// that the mutex isn't unlocked until all the handlers downstream of this
 		// middleware have also returned.
 		mu.Unlock()
+	}
 		next.ServeHTTP(w, r)
 	})
 

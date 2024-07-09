@@ -6,7 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (app *application) routes() *httprouter.Router {
+func (app *application) routes() http.Handler {
 	// Initialize a new httprouter router instance.
 	router := httprouter.New()
 
@@ -30,11 +30,12 @@ func (app *application) routes() *httprouter.Router {
 	router.HandlerFunc(http.MethodDelete, "/v1/movies/:id", app.deleteMovieHandler)
 	// Return the httprouter instance.
 	router.HandlerFunc(http.MethodGet, "/v1/movies", app.listMoviesHandler)
+	// Add the route for the POST /v1/users endpoint.
+router.HandlerFunc(http.MethodPost, "/v1/users", app.registerUserHandler)
 
 	// Wrap the router with the panic recovery middleware.
-// Wrap the router with the rateLimit() middleware.
-return app.recoverPanic(app.rateLimit(router))
-
+	// Wrap the router with the rateLimit() middleware.
+	return app.recoverPanic(app.rateLimit(router))
 
 	// return router
 }

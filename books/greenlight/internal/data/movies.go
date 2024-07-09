@@ -208,7 +208,8 @@ WHERE id = $1`
 // using them right now, we've set this up to accept the various filter parameters as
 // arguments.
 
-func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*Movie, error) {
+// Update the function signature to return a Metadata struct.
+func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*Movie, Metadata, error) {
 	// Construct the SQL query to retrieve all movie records.
 
 	query := fmt.Sprintf(`
@@ -301,14 +302,14 @@ LIMIT $3 OFFSET $4`, filters.sortColumn(), filters.sortDirection())
 	// When the rows.Next() loop has finished, call rows.Err() to retrieve any error
 	// that was encountered during the iteration.
 	if err = rows.Err(); err != nil {
-		return nil,Metadata{}, err
+		return nil, Metadata{}, err
 	}
 	// If everything went OK, then return the slice of movies.
 	// return movies, nil
-// Generate a Metadata struct, passing in the total record count and pagination
-// parameters from the client.
-metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
-// Include the metadata struct when returning.
-return movies, metadata, nil
+	// Generate a Metadata struct, passing in the total record count and pagination
+	// parameters from the client.
+	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
+	// Include the metadata struct when returning.
+	return movies, metadata, nil
 
 }
