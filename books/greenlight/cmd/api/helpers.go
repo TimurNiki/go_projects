@@ -203,17 +203,17 @@ func (app *application) readInt(qs url.Values, key string, defaultValue int, v *
 	return i
 }
 
-func (app *application) background(fn func()){
+func (app *application) background(fn func()) {
 	app.wg.Add(1)
-	go func(){
+	go func() {
 		// Use defer to decrement the WaitGroup counter before the goroutine returns.
-defer app.wg.Done()
-		defer func(){
-			if err:=recover();err!=nil{
+		defer app.wg.Done()
+		defer func() {
+			if err := recover(); err != nil {
 				app.logger.PrintError(fmt.Errorf("%s", err), nil)
 			}
 		}()
 		// Execute the arbitrary function that we passed as the parameter.
-fn()
+		fn()
 	}()
 }

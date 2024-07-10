@@ -65,8 +65,7 @@ type application struct {
 	logger *jsonlog.Logger
 	models data.Models
 	mailer mailer.Mailer
-	wg sync.WaitGroup
-
+	wg     sync.WaitGroup
 }
 
 func main() {
@@ -137,7 +136,6 @@ func main() {
 		logger: logger,
 		models: data.NewModels(db),
 		mailer: mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
-
 	}
 	// Declare a new servemux and add a /v1/healthcheck route which dispatches requests
 	// to the healthcheckHandler method (which we will create in a moment).

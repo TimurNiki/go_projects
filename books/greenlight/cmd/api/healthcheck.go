@@ -21,7 +21,7 @@ func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Add a 4 second delay.
-time.Sleep(4 * time.Second)
+	time.Sleep(4 * time.Second)
 
 	// // Create a map which holds the information that we want to send in the response.
 	// data := map[string]string{
@@ -37,7 +37,6 @@ time.Sleep(4 * time.Second)
 	err := app.writeJSON(w, http.StatusOK, env, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
-
 
 	}
 
