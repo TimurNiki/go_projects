@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -22,20 +21,30 @@ func (app *application) routes() http.Handler {
 	// endpoints using the HandlerFunc() method. Note that http.MethodGet and
 	// http.MethodPost are constants which equate to the strings "GET" and "POST"
 	// respectively.
+	//* Show application information
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.healthcheckHandler)
+	//* Create a new movie
 	router.HandlerFunc(http.MethodPost, "/v1/movies", app.createMovieHandler)
+	//* Show the details of a specific movie
 	router.HandlerFunc(http.MethodGet, "/v1/movies/:id", app.showMovieHandler)
 	// Add the route for the PUT /v1/movies/:id endpoint.
+	//* Update the details of a specific movie
 	router.HandlerFunc(http.MethodPatch, "/v1/movies/:id", app.updateMovieHandler)
+	//* Delete a specific movie
 	router.HandlerFunc(http.MethodDelete, "/v1/movies/:id", app.deleteMovieHandler)
 	// Return the httprouter instance.
+	//* Show the details of all movies
 	router.HandlerFunc(http.MethodGet, "/v1/movies", app.listMoviesHandler)
 	// Add the route for the POST /v1/users endpoint.
+	//* Register a new user
 	router.HandlerFunc(http.MethodPost, "/v1/users", app.registerUserHandler)
+	//* Activate a specific user
 	router.HandlerFunc(http.MethodPut, "/v1/users/activated", app.activateUserHandler)
+	//* Generate a new authentication token
+	router.HandlerFunc(http.MethodPost, "/v1/tokens/authentication", app.createAuthenticationTokenHandler)
 	// Wrap the router with the panic recovery middleware.
 	// Wrap the router with the rateLimit() middleware.
-	return app.recoverPanic(app.rateLimit(router))
+	return app.recoverPanic(app.rateLimit(app.authenticate(router)))
 
 	// return router
 }
