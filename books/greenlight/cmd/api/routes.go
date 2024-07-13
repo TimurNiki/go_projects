@@ -1,8 +1,8 @@
 package main
 
 import (
-	"net/http"
 	"github.com/julienschmidt/httprouter"
+	"net/http"
 )
 
 func (app *application) routes() http.Handler {
@@ -25,7 +25,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.healthcheckHandler)
 
 	// Use the requirePermission() middleware on each of the /v1/movies** endpoints,
-// passing in the required permission code as the first parameter.
+	// passing in the required permission code as the first parameter.
 
 	//* Create a new movie
 	router.HandlerFunc(http.MethodPost, "/v1/movies", app.requirePermission("movies:write", app.createMovieHandler))
@@ -48,10 +48,9 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPut, "/v1/users/activated", app.activateUserHandler)
 	//* Generate a new authentication token
 	router.HandlerFunc(http.MethodPost, "/v1/tokens/authentication", app.createAuthenticationTokenHandler)
-	
+
 	// Wrap the router with the panic recovery middleware.
 	// Wrap the router with the rateLimit() middleware.
-	return app.recoverPanic(app.rateLimit(app.authenticate(router)))
-
-	// return router
+	// Add the enableCORS() middleware.
+	return app.recoverPanic(app.enableCORS(app.rateLimit(app.authenticate(router))))
 }
