@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
-
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/data"
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/validator"
 )
@@ -21,7 +19,7 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	var input struct {
 		Title   string   `json:"title"`
 		Year    int32    `json:"year"`
-		Runtime int32    `json:"runtime"`
+		Runtime data.Runtime    `json:"runtime"`
 		Genres  []string `json:"genres"`
 	}
 

@@ -2,12 +2,12 @@ package data
 
 import (
 	"context"
+	"crypto/sha256"
 	"database/sql"
 	"errors"
-	"time"
-
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/validator"
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 var (
@@ -15,7 +15,6 @@ var (
 )
 
 var AnonymousUser = &User{}
-
 
 // Define a User struct to represent an individual user. Importantly, notice how we are
 // using the json:"-" struct tag to prevent the Password and Version fields appearing in
@@ -253,9 +252,7 @@ AND tokens.expiry > $3`
 	return &user, nil
 }
 
-
 // Check if a User instance is the AnonymousUser.
 func (u *User) IsAnonymous() bool {
 	return u == AnonymousUser
-	}
-	
+}

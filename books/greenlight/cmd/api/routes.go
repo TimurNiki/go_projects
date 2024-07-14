@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"expvar" // New import
+
 )
 
 func (app *application) routes() http.Handler {
@@ -49,8 +51,13 @@ func (app *application) routes() http.Handler {
 	//* Generate a new authentication token
 	router.HandlerFunc(http.MethodPost, "/v1/tokens/authentication", app.createAuthenticationTokenHandler)
 
+
+	router.Handler(http.MethodGet, "/debug/vars", expvar.Handler())
+
+
 	// Wrap the router with the panic recovery middleware.
 	// Wrap the router with the rateLimit() middleware.
 	// Add the enableCORS() middleware.
-	return app.recoverPanic(app.enableCORS(app.rateLimit(app.authenticate(router))))
+	// Use the new metrics() middleware at the start of the chain.
+	return app.metrics(app.recoverPanic(app.enableCORS(app.rateLimit(app.authenticate(router)))))
 }
