@@ -4,13 +4,13 @@ import (
 	"errors"
 	"expvar"
 	"fmt"
-	"net"
+	
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-
+"github.com/tomasen/realip" // New import
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/data"
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/validator"
 	"golang.org/x/time/rate" // New import
@@ -79,11 +79,15 @@ func (app *application) rateLimit(next http.Handler) http.Handler {
 		// Extract the client's IP address from the request.
 		// Only carry out the check if rate limiting is enabled.
 		if app.config.limiter.enabled {
-			ip, _, err := net.SplitHostPort(r.RemoteAddr)
-			if err != nil {
-				app.serverErrorResponse(w, r, err)
-				return
-			}
+			// ip, _, err := net.SplitHostPort(r.RemoteAddr)
+			// if err != nil {
+			// 	app.serverErrorResponse(w, r, err)
+			// 	return
+			// }
+
+			// Use the realip.FromRequest() function to get the client's real IP address.
+ip := realip.FromRequest(r)
+
 			// Lock the mutex to prevent this code from being executed concurrently.
 			mu.Lock()
 			// Check to see if the IP address already exists in the map. If it doesn't, then
@@ -369,7 +373,7 @@ func (app *application) metrics(next http.Handler) http.Handler {
 		totalResponsesSentByStatus = expvar.NewMap("total_responses_sent_by_status")
 	)
 
-	return http.HandleFunc(func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Record the time that we started to process the request.
 		start := time.Now()
 		// Use the Add() method to increment the number of requests received by 1.

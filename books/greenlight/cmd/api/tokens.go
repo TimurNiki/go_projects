@@ -2,10 +2,10 @@ package main
 
 import (
 	"errors"
-	"net/http"
-	"time"
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/data"
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/validator"
+	"net/http"
+	"time"
 )
 
 func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, r *http.Request) {

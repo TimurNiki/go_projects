@@ -1,7 +1,7 @@
 package main
 
 import (
-	"crypto/sha256"
+
 	"errors"
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/data"
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/validator"

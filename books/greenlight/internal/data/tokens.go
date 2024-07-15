@@ -79,7 +79,7 @@ type TokenModel struct {
 
 // The New() method is a shortcut which creates a new Token struct and then inserts the
 // data in the tokens table.
-func (m TokenModel) New(userID int64, scope string, ttl time.Duration) (*Token, error) {
+func (m TokenModel) New(userID int64, ttl time.Duration, scope string) (*Token, error) {
 	token, err := generateToken(userID, ttl, scope)
 	if err != nil {
 		return nil, err
