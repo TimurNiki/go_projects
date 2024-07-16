@@ -6,13 +6,16 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/base32"
-	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/validator"
 	"time"
+
+	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/validator"
 )
 
 const (
 	ScopeActivation     = "activation"
 	ScopeAuthentication = "authentication"
+	ScopePasswordReset = "password-reset"
+
 )
 
 // Define a Token struct to hold the data for an individual token. This includes the
@@ -111,3 +114,4 @@ func (m TokenModel) DeleteAllForUser(scope string, userID int64) error {
 	_, err := m.DB.ExecContext(ctx, query, scope, userID)
 	return err
 }
+

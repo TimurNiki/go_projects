@@ -1,10 +1,9 @@
 package main
 
 import (
+	"expvar" // New import
 	"github.com/julienschmidt/httprouter"
 	"net/http"
-	"expvar" // New import
-
 )
 
 func (app *application) routes() http.Handler {
@@ -51,9 +50,12 @@ func (app *application) routes() http.Handler {
 	//* Generate a new authentication token
 	router.HandlerFunc(http.MethodPost, "/v1/tokens/authentication", app.createAuthenticationTokenHandler)
 
-
+	// Add the PUT /v1/users/password endpoint.
+	router.HandlerFunc(http.MethodPut, "/v1/users/password", app.updateUserPasswordHandler)
+	// Add the POST /v1/tokens/password-reset endpoint.
+	router.HandlerFunc(http.MethodPost, "/v1/tokens/password-reset", app.createPasswordResetTokenHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/tokens/activation", app.createActivationTokenHandler)
 	router.Handler(http.MethodGet, "/debug/vars", expvar.Handler())
-
 
 	// Wrap the router with the panic recovery middleware.
 	// Wrap the router with the rateLimit() middleware.

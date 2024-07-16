@@ -13,9 +13,9 @@ import (
 	// "fmt"
 	// "log"
 	// "net/http"
+	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/vcs"
 	"os"
 	"time"
-
 	// Import the pq driver so that it can register itself with the database/sql
 	// package. Note that we alias this import to the blank identifier, to stop the Go
 	// compiler complaining that the package isn't being used.
@@ -32,8 +32,7 @@ import (
 // Make version a variable (rather than a constant) and set its value to vcs.Version().
 var (
 	version = vcs.Version()
-	)
-	
+)
 
 // Define a config struct to hold all the configuration settings for our application.
 // For now, the only configuration settings will be the network port that we want the
@@ -129,16 +128,16 @@ func main() {
 		return nil
 	})
 
-	displayVersion:-flag.Bool("version", false, "Display version information")
+	displayVersion := flag.Bool("version", false, "Display version information")
 	flag.Parse()
 
 	// If the version flag value is true, then print out the version number and
-// immediately exit.
-if *displayVersion {
-	fmt.Printf("Version:\t%s\n", version)
-	os.Exit(0)
+	// immediately exit.
+	if *displayVersion {
+		fmt.Printf("Version:\t%s\n", version)
+		os.Exit(0)
 	}
-	
+
 	// Initialize a new logger which writes messages to the standard out stream,
 	// prefixed with the current date and time
 	// logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
