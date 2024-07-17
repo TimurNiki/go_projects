@@ -67,6 +67,10 @@ type config struct {
 	cors struct {
 		trustedOrigins []string
 	}
+	jwt struct {
+		secret string // Add a new field to store the JWT signing secret.
+		}
+		
 }
 
 // Define an application struct to hold the dependencies for our HTTP handlers, helpers,
@@ -115,7 +119,10 @@ func main() {
 	flag.IntVar(&cfg.smtp.port, "smtp-port", 25, "SMTP port")
 	flag.StringVar(&cfg.smtp.username, "smtp-username", "0abf276416b183", "SMTP username")
 	flag.StringVar(&cfg.smtp.password, "smtp-password", "d8672aa2264bb5", "SMTP password")
-	flag.StringVar(&cfg.smtp.sender, "smtp-sender", "Greenlight <no-reply@greenlight.alexedwards.net>", "SMTP sender")
+	flag.StringVar(&cfg.smtp.sender, "smtp-sender", "Greenlight <no-reply@greenlight.net>", "SMTP sender")
+// Parse the JWT signing secret from the command-line-flag. Notice that we leave the
+// default value as the empty string if no flag is provided.
+flag.StringVar(&cfg.jwt.secret, "jwt-secret", "", "JWT secret")
 
 	// Use the flag.Func() function to process the -cors-trusted-origins command line
 	// flag. In this we use the strings.Fields() function to split the flag value into a

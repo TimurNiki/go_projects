@@ -26,6 +26,7 @@ require (
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
+	github.com/pascaldekloe/jwt v1.12.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/sikozonpc/ecom v0.0.0-20240320233354-7e8c26497ce6 // indirect
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
