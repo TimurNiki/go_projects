@@ -1,0 +1,15 @@
+syntax = "proto3"; 
+
+option go_package="github.com/TimurNiki/go_api_tutorial/books/grpc/chapter02/listing-2.1/payment";
+
+message CreatePaymentRequest{
+    float price = 1;
+}
+
+message CreatePaymentResponse{
+    int64 bill_id = 1;
+}
+
+service PaymentService{
+    rpc CreatePayment(CreatePaymentRequest) returns (CreatePaymentResponse) {}
+}
