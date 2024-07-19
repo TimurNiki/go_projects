@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type OrderClient interface {
 	Create(ctx context.Context, in *CreateOrderRequest, opts ...grpc.CallOption) (*CreateOrderResponse, error)
 }
-
+// order client
 type orderClient struct {
 	cc grpc.ClientConnInterface
 }
