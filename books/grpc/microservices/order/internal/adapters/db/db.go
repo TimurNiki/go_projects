@@ -87,9 +87,24 @@ func (a Adapter) Save(order *domain.Order) error {
 		OrderItems: orderItems,
 	}
 	//Saves data into the database
-	res := a.db.Create(&orderModel)
+	res := a.db.WithContext(ctx).Create(&orderModel)
 	if res.Error == nil {
 		order.ID = int64(orderModel.ID)
 	}
 	return res.Error
+}
+
+func NewAdapter(dataSourceUrl string) (*Adapter, error) {
+	db, openErr := gorm.Open(mysql.Open(dataSourceUrl), &gorm.Config{})
+	if openErr != nil {
+		return nil, fmt.Errorf("db connection error: %v", openErr)
+	}
+	if err := db.Use(otelgorm.NewPlugin(otelgorm.WithDBName("order"))); err != nil {
+		return nil, fmt.Errorf("db otel plugin error: %v", err)
+	}
+	err := db.AutoMigrate(&Order{}, OrderItem{})
+	if err != nil {
+		return nil, fmt.Errorf("db migration error: %v", err)
+	}
+	return &Adapter{db: db}, nil
 }
