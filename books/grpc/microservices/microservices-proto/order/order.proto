@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/microservices-proto/order";
+option go_package = "github.com/TimurNiki/go-api-tutorial/books/grpc/microservices/microservices-proto/order";
 
 message CreateOrderRequest {
     int64 user_id = 1;
