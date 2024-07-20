@@ -1,6 +1,8 @@
 package models
 
 import (
+	"database/sql"
+	"log"
 	"testing"
 
 	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/assert"
@@ -52,4 +54,21 @@ func TestUserModelExists(t *testing.T) {
 		})
 
 	}
+}
+// gpt version
+func newTestDB(t *testing.T) *sql.DB {
+	// Modify the connection details based on your database setup.
+	db, err := sql.Open("your-database-driver", "connection-string")
+	if err != nil {
+		log.Fatalf("error opening database: %v", err)
+	}
+
+	// Check if the database connection is successful.
+	err = db.Ping()
+	if err != nil {
+		log.Fatalf("error pinging database: %v", err)
+	}
+
+	// Return the database connection pool.
+	return db
 }

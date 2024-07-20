@@ -2,12 +2,14 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net/http"
 	"runtime/debug"
 	"time"
 
-	"github.com/valyala/fasthttp/reuseport"
+	"github.com/go-playground/form/v4"
+	"github.com/justinas/nosurf"
 )
 
 func (app *application) serverError(w http.ResponseWriter, err error) {
@@ -20,7 +22,8 @@ func (app *application) serverError(w http.ResponseWriter, err error) {
 	//detailed error message and stack trace in a HTTP response if — and only if — the debug flag
 	// has been set. Otherwise send a generic error message as normal.
 	if app.debug {
-		http.Error(w, trace, http.StatusInternalServerError)
+		// http.Error(w, trace, http.StatusInternalServerError)
+		http.Error(w,trace, http.StatusInternalServerError)
 		return
 	}
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -124,7 +127,7 @@ func (app *application) decodePostForm(r *http.Request, dst any) error {
 // return false.
 func (app *application) isAuthenticated(r *http.Request) bool {
 	// return app.sessionManager.Exists(r.Context(), "authenticatedUserID")
-	isAuthenticated, ok := r.Context().Value(contextKeyIsAuthenticated).(bool)
+	isAuthenticated, ok := r.Context().Value("contextKeyIsAuthenticated").(bool)
 	if !ok {
 		return false
 	}

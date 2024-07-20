@@ -1,20 +1,14 @@
 package main
 
 import (
-	"crypto/rand"
 	"errors"
-	"strings"
-	"unicode/utf8"
-
-	// "html/template"
-	// "log"
 	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/validator"
-	"github.com/go-playground/form/v4"
+
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -242,7 +236,7 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 
 	var form snippetCreateForm
 
-	err = app.decodePostForm(r, &form)
+	err := app.decodePostForm(r, &form)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
@@ -384,6 +378,8 @@ func (app *application) userSignUpPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	
+
 	// Validate the form contents using our helper functions.
 	form.CheckField(validator.NotBlank(form.Name), "name", "This field cannot be blank")
 	form.CheckField(validator.NotBlank(form.Email), "email", "This field cannot be blank")
@@ -402,7 +398,7 @@ func (app *application) userSignUpPost(w http.ResponseWriter, r *http.Request) {
 
 	// Try to create a new user record in the database. If the email already
 	// exists then add an error message to the form and re-display it.
-	err = app.Users.Insert(form.Name, form.Email, form.Password)
+	err = app.users.Insert(form.Name, form.Email, form.Password)
 	if err != nil {
 		if errors.Is(err, models.ErrDuplicateEmail) {
 			form.AddFieldError("email", "Email address is already in use")

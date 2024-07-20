@@ -44,6 +44,9 @@ func TestPing2(t *testing.T) {
 	// Create a new instance of our application struct. For now, this just
 	// contains a couple of mock loggers (which discard anything written to
 	// them).
+
+	
+	application :=
 	app := &application{
 		errorLog: log.New(io.Discard, "", 0),
 		infoLog:  log.New(io.Discard, "", 0),

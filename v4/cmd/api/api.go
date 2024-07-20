@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-
-	"github.com/TimurNiki/go_api_tutorial/v4/services/product"
 	"github.com/TimurNiki/go_api_tutorial/v4/services/user"
 	"github.com/gorilla/mux"
 )
@@ -34,9 +32,9 @@ func (s *APIServer) Run() error {
 	// register routes
 	userHandler.RegisterRoutes(subrouter)
 
-	productStore:=product.NewStore(s.db)
-	productHandler:=product.NewHandler(productStore)
-	productHandler.RegisterRoutes(subrouter)
+	// productStore:=product.NewStore(s.db)
+	// productHandler:=product.NewHandler(productStore)
+	// productHandler.RegisterRoutes(subrouter)
 	
 	log.Printf("Listening on port %s", s.addr)
 	return http.ListenAndServe(s.addr, router)

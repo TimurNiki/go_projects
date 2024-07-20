@@ -1,4 +1,4 @@
-package projects
+package main
 
 func NewProjectService(s Store) *ProjectService {
 	return &ProjectService{store: s}

@@ -1,8 +1,14 @@
 package card
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/TimurNiki/go_api_tutorial/v4/services/auth"
 	"github.com/TimurNiki/go_api_tutorial/v4/types"
+	"github.com/TimurNiki/go_api_tutorial/v4/utils"
+	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/mux"
 )
 
 type Handler struct {
@@ -44,7 +50,7 @@ func (h *Handler) handleCheckout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get productIds
-	productIds, err := getCartItemsIDs(cart.Items)
+	productIds, err := getCartItemsIDs(card.Items)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
@@ -57,7 +63,7 @@ func (h *Handler) handleCheckout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// create order
-	orderID, totalPrice, err := h.createOrder(products, cart.Items, userID)
+	orderID, totalPrice, err := h.createOrder(products, card.Items, userID)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return

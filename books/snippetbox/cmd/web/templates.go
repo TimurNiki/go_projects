@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
+	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/ui"
 )
 
 // Define a templateData type to act as the holding structure for
@@ -14,7 +15,7 @@ import (
 // At the moment it only contains one field, but we'll add more
 // to it as the build progresses.
 type templateData struct {
-	CurrenYear int
+	CurrentYear int
 	Snippet    *models.Snippet
 	// Include a Snippets field in the templateData struct
 	Snippets        []*models.Snippet

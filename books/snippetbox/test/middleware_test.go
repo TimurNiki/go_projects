@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/assert"
 )
 
 func TestSecureHeaders(t *testing.T) {

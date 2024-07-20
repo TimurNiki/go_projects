@@ -1,6 +1,10 @@
 package mocks
 
-import "github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
+import (
+	"time"
+
+	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
+)
 
 type UserModel struct{}
 
@@ -49,5 +53,5 @@ func (m *UserModel) PasswordUpdate(id int, currentPassword, newPassword string) 
 		return nil
 		
 	}
-	return model.ErrNoRecord
+	return nil
 }

@@ -1,11 +1,23 @@
 package auth
 
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"strconv"
+	"time"
+
+	"github.com/TimurNiki/go_api_tutorial/v4/configs"
+	"github.com/TimurNiki/go_api_tutorial/v4/utils"
+	"github.com/golang-jwt/jwt"
+)
+
 type contextKey string
 
 const UserKey contextKey = "userID"
 
-func CreateJWT(secret []byte, userID int) (string, error) {
-	expiration := time.Second * time.Duration(configs.Envs.JWTExpiration)
+func CreateJWT( userID int, secret []byte) (string, error) {
+	expiration := time.Second * time.Duration(configs.Envs.JWTExpirationInSeconds)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userID":    strconv.Itoa(int(userID)),
 		"expiresAt": time.Now().Add(expiration).Unix(),

@@ -3,9 +3,10 @@ package main
 import (
 	"net/http"
 
+	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/ui"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
-	"github.com/justinas/nosurf"
+	
 )
 
 func (app *application) routes() http.Handler {
@@ -46,9 +47,9 @@ func (app *application) routes() http.Handler {
 	// LoadAndSave session middleware but we'll add more to it later.
 	dynamic := alice.New(app.sessionManager.LoadAndSave, noSurf, app.authenticate)
 
-	router.HandlerFunc(http.MethodGet, "/about", dynamic.ThenFunc(app.about))
+	router.Handler(http.MethodGet, "/about", dynamic.ThenFunc(app.about))
 	// Add a new GET /ping route.
-	router.HandlerFunc(http.MethodGet, "/ping", ping)
+	// router.Handler(http.MethodGet, "/ping", ping)
 
 	// And then create the routes using the appropriate methods, patterns and
 	// handlers.
@@ -57,15 +58,15 @@ func (app *application) routes() http.Handler {
 	// the appropriate handler function. Note that because the alice ThenFunc()
 	// method returns a http.Handler (rather than a http.HandlerFunc) we also
 	// need to switch to registering the route using the router.Handler() method
-	router.HandlerFunc(http.MethodGet, "/", dynamic.ThenFunc(app.home))
-	router.HandlerFunc(http.MethodGet, "/snippet/view/:id", dynamic.ThenFunc(app.snippetView))
+	router.Handler(http.MethodGet, "/", dynamic.ThenFunc(app.home))
+	router.Handler(http.MethodGet, "/snippet/view/:id", dynamic.ThenFunc(app.snippetView))
 	// router.HandlerFunc(http.MethodGet, "/snippet/create", dynamic.ThenFunc(app.snippetCreate))
 	// router.HandlerFunc(http.MethodPost, "/snippet/create", dynamic.ThenFunc(app.snippetCreatePost))
 
-	router.HandlerFunc(http.MethodGet, "/user/signup", dynamic.ThenFunc(app.userSignUp))
-	router.HandlerFunc(http.MethodPost, "/user/signup", dynamic.ThenFunc(app.userSignUpPost))
-	router.HandlerFunc(http.MethodGet, "/user/login", dynamic.ThenFunc(app.userLogin))
-	router.HandlerFunc(http.MethodPost, "/user/login", dynamic.ThenFunc(app.userLoginPost))
+	router.Handler(http.MethodGet, "/user/signup", dynamic.ThenFunc(app.userSignUp))
+	router.Handler(http.MethodPost, "/user/signup", dynamic.ThenFunc(app.userSignUpPost))
+	router.Handler(http.MethodGet, "/user/login", dynamic.ThenFunc(app.userLogin))
+	router.Handler(http.MethodPost, "/user/login", dynamic.ThenFunc(app.userLoginPost))
 	// router.HandlerFunc(http.MethodPost, "/user/logout", dynamic.ThenFunc(app.userLogoutPost))
 
 	// Protected (authenticated-only) application routes, using a new "protected"

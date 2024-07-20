@@ -2,6 +2,7 @@ package assert
 
 import (
 	"testing"
+	"strings"
 )
 
 func Equal[T comparable](t *testing.T, actual, expected T) {
