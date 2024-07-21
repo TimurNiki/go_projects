@@ -16,7 +16,7 @@ type Validator struct {
 // Valid() returns true if the FieldErrors map doesn't contain any entries.
 // Update the Valid() method to also check that the NonFieldErrors slice is
 // empty
-func (v *Validator) Validator() bool {
+func (v *Validator) Valid() bool {
 	return len(v.FieldErrors) == 0 && len(v.NonFieldErrors) == 0
 
 }

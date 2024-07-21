@@ -295,7 +295,7 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 	}
 	// Use the Put() method to add a string value ("Snippet successfully
 	// created!") and the corresponding key ("flash") to the session data
-	app.sessionManager.Put(r.Content(), "flash", "Snippet successfully created!")
+	app.sessionManager.Put(r.Context(), "flash", "Snippet successfully created!")
 
 	// Redirect the user to the relevant page for the snippet.
 	http.Redirect(w, r, fmt.Sprintf("/snippet/%d", id), http.StatusSeeOther)
@@ -377,8 +377,6 @@ func (app *application) userSignUpPost(w http.ResponseWriter, r *http.Request) {
 		app.clientError(w, http.StatusBadRequest)
 		return
 	}
-
-	
 
 	// Validate the form contents using our helper functions.
 	form.CheckField(validator.NotBlank(form.Name), "name", "This field cannot be blank")
@@ -563,7 +561,7 @@ func (app *application) accountPasswordUpdatePost(w http.ResponseWriter, r *http
 	form.CheckField(validator.NotBlank(form.NewPassword), "newPassword", "New password cannot be blank")
 	form.CheckField(validator.NotBlank(form.NewPasswordConfirmation), "newPasswordConfirmation", "New password confirmation cannot be blank")
 	form.CheckField(validator.MinChars(form.NewPassword, 8), "newPassword", "New password must be at least 8 characters long")
-	form.CheckField(validator.Matches(form.NewPassword, form.NewPasswordConfirmation), "newPasswordConfirmation", "Passwords do not match")
+	form.CheckField(validator.Matches(form.NewPasswordConfirmation, validator.EmailRX), "newPasswordConfirmation", "Passwords do not match")
 	if !form.Valid() {
 		data := app.newTemplateData(r)
 		data.Form = form
@@ -579,7 +577,7 @@ func (app *application) accountPasswordUpdatePost(w http.ResponseWriter, r *http
 			data := app.newTemplateData(r)
 			data.Form = form
 			app.render(w, http.StatusUnprocessableEntity, "password.tmpl.html", data)
-		} else if err != nil {
+		} else {
 			app.serverError(w, err)
 		}
 		return

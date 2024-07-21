@@ -7,9 +7,14 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/http/cookiejar"
 	"net/http/httptest"
+	"net/url"
 	"os"
+	"regexp"
 	"testing"
+
+	"github.com/go-playground/form/v4"
 )
 
 // Create a newTestApplication helper which returns an instance of our

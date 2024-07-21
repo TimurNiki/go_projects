@@ -25,3 +25,5 @@ func (a *Adapter) Create(ctx context.Context, request *order.CreateOrderRequest)
 
 	return &order.CreateOrderResponse{OrderId: result.ID}, nil
 }
+
+

@@ -46,11 +46,7 @@ func TestPing2(t *testing.T) {
 	// them).
 
 	
-	application :=
-	app := &application{
-		errorLog: log.New(io.Discard, "", 0),
-		infoLog:  log.New(io.Discard, "", 0),
-	}
+		app := newTestApplication(t)
 	// We then use the httptest.NewTLSServer() function to create a new test
 	// server, passing in the value returned by our app.routes() method as the
 	// handler for the server. This starts up a HTTPS server which listens on a
