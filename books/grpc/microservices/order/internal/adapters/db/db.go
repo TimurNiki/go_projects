@@ -1,9 +1,11 @@
-//* This file contains a struct for database models and related functions to manage their state
+// * This file contains a struct for database models and related functions to manage their state
 package db
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/order/internal/application/core/domain"
 	// "github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/order/internal/application/core"
 	// "github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/order/internal/application/core/domain"
 	// "gorm.io/driver/mysql"
@@ -57,7 +59,7 @@ func (a Adapter) Save(ctx context.Context, order *domain.Order) error {
 		orderItems = append(orderItems, OrderItem{
 			ProductCode: orderItem.ProductCode,
 			UnitPrice:   orderItem.UnitPrice,
-			Quantity:    orderItem.Quantityjhj,
+			Quantity:    orderItem.Quantity,
 		})
 	}
 	orderModel := Order{
@@ -86,7 +88,7 @@ func NewAdapter(dataSourceUrl string) (*Adapter, error) {
 	}
 	return &Adapter{db: db}, nil
 
-
+}
 // type Order struct {
 	
 // 	gorm.Model

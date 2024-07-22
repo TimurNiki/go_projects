@@ -3,11 +3,13 @@ package grpc
 import (
 	"net"
 
+	"fmt"
+	"log"
+
 	"github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/order/config"
 	"github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/order/internal/adapters/grpc"
 	"github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/order/internal/ports"
-	"fmt"
-	"log"
+	"google.golang.org/grpc/reflection"
 )
 
 type Adapter struct {

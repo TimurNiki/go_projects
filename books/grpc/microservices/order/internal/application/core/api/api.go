@@ -1,6 +1,9 @@
 package api
 
-import "github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/order/internal/ports"
+import (
+	"github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/order/internal/application/core/domain"
+	"github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/order/internal/ports"
+)
 
 type Application struct {
 	db ports.DBPort // The API depends on DBPORT
