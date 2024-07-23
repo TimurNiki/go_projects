@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"context"
-
+"github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/order/order-proto"
 	"github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/order/internal/application/core/domain"
 )
 
@@ -18,7 +18,7 @@ func (a *Adapter) Create(ctx context.Context, request *order.CreateOrderRequest)
 	}
 
 	newOrder := domain.NewOrder(request.UserId, orderItems)
-	result, err := a.api.PlaceOrder(newOrder)
+	result, err := a.api.PlaceOrder(ctx,newOrder)
 	if err != nil {
 		return nil, err
 	}

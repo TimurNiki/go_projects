@@ -2,11 +2,6 @@ package domain
 
 import "time"
 
-type OrderItem struct {
-	ProductCode string  `json:"product_code"` // Unique code of the product
-	UnitPrice   float32 `json:"unit_price"`   //Price of a single product
-	Quantity int32 `json:"quantity"` //Count of the product
-}
 
 type Order struct {
 	ID         int64       `json:"id"`
@@ -15,6 +10,13 @@ type Order struct {
 	OrderItems []OrderItem `json:"order_items"`
 	CreatedAt  int64       `json:"created_at"`
 }
+type OrderItem struct {
+	ProductCode string  `json:"product_code"` // Unique code of the product
+	UnitPrice   float32 `json:"unit_price"`   //Price of a single product
+	Quantity int32 `json:"quantity"` //Count of the product
+}
+
+
 
 //* Function to create default order
 

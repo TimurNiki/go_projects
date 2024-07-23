@@ -6,12 +6,10 @@ import (
 	"fmt"
 
 	"github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/order/internal/application/core/domain"
-	// "github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/order/internal/application/core"
-	// "github.com/TimurNiki/go_api_tutorial/books/grpc/microservices/order/internal/application/core/domain"
-	// "gorm.io/driver/mysql"
-	// "gorm.io/gorm"
+	"github.com/uptrace/opentelemetry-go-extra/otelgorm"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
-
 
 type Order struct {
 	gorm.Model
@@ -89,8 +87,9 @@ func NewAdapter(dataSourceUrl string) (*Adapter, error) {
 	return &Adapter{db: db}, nil
 
 }
+
 // type Order struct {
-	
+
 // 	gorm.Model
 // 	CustomerID int64
 // 	Status     string
@@ -98,7 +97,7 @@ func NewAdapter(dataSourceUrl string) (*Adapter, error) {
 // }
 
 // type OrderItem struct {
-	
+
 // 	gorm.Model
 // 	ProductCode string
 // 	UnitPrice   float32
@@ -111,7 +110,6 @@ func NewAdapter(dataSourceUrl string) (*Adapter, error) {
 // type Adapter struct {
 // 	db *gorm.DB
 // }
-
 
 // func NewAdapter(dataSourceUrl string) (*Adapter, error) {
 // 	db, openErr := gorm.Open(mysql.Open(dataSourceUrl), &gorm.Config{})

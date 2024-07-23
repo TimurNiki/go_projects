@@ -11,6 +11,8 @@ require (
 	github.com/alexedwards/scs/mysqlstore v0.0.0-20240316134038-7e11d57e8885 // indirect
 	github.com/alexedwards/scs/v2 v2.8.0 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/go-logr/logr v1.4.2 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-mail/mail/v2 v2.3.0 // indirect
 	github.com/go-playground/form/v4 v4.2.1 // indirect
 	github.com/gofiber/fiber/v2 v2.52.4 // indirect
@@ -33,9 +35,14 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/sikozonpc/ecom v0.0.0-20240320233354-7e8c26497ce6 // indirect
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
+	github.com/uptrace/opentelemetry-go-extra/otelgorm v0.3.1 // indirect
+	github.com/uptrace/opentelemetry-go-extra/otelsql v0.3.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
+	go.opentelemetry.io/otel v1.27.0 // indirect
+	go.opentelemetry.io/otel/metric v1.27.0 // indirect
+	go.opentelemetry.io/otel/trace v1.27.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 // indirect
