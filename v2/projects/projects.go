@@ -1,6 +1,15 @@
-package main
+package projects
 
-func NewProjectService(s Store) *ProjectService {
+import (
+	"encoding/json"
+	"net/http"
+
+	"github.com/TimurNiki/go_api_tutorial/v2/store"
+	"github.com/TimurNiki/go_api_tutorial/v2/utils"
+	"github.com/gorilla/mux"
+)
+
+func NewProjectService(s store.Store) *ProjectService {
 	return &ProjectService{store: s}
 }
 
@@ -11,7 +20,7 @@ func (s *ProjectService) RegisterRoutes(r *mux.Router) {
 }
 
 func (s *ProjectService) handleCreateProject(w http.ResponseWriter, r *http.Request) {
-body, err := io.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Error reading request body", http.StatusBadRequest)
 		return
@@ -46,21 +55,21 @@ func (s *ProjectService) handleGetProject(w http.ResponseWriter, r *http.Request
 
 	project, err := s.store.GetProject(id)
 	if err != nil {
-		WriteJSON(w, http.StatusInternalServerError, ErrorResponse{Error: "Error getting project"})
+		utils.WriteJSON(w, http.StatusInternalServerError,utils.ErrorResponse{Error: "Error getting project"})
 		return
 	}
 
-	WriteJSON(w, http.StatusOK, project)
+	utils.WriteJSON(w, http.StatusOK, project)
 }
 
 func (s *ProjectService) handleDeleteProject(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	project,err:= s.store.DeleteProject(	id)
-	if err !=nil{
-		WriteJSON(w, http.StatusInternalServerError, ErrorResponse{Error: "Error deleting project"})
+	project, err := s.store.DeleteProject(id)
+	if err != nil {
+		utils.WriteJSON(w, http.StatusInternalServerError,utils.ErrorResponse{Error: "Error deleting project"})
 		return
 	}
-	WriteJSON(w, http.StatusNoContent, nil)
+	utils.WriteJSON(w, http.StatusNoContent, nil)
 }

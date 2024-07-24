@@ -1,13 +1,18 @@
-package main
+package store
 
-import "database/sql"
+import (
+	"database/sql"
+
+	"github.com/TimurNiki/go_api_tutorial/v2/projects"
+	"github.com/TimurNiki/go_api_tutorial/v2/users"
+)
 
 type Store interface {
-	CreateUser(u *User) (*User, error)
-	GetUserByID(id string) (*User, error)
+	CreateUser(u *users.User) (*users.User, error)
+	GetUserByID(id string) (*users.User, error)
 	// Projects
-	CreateProject(p *Project) error
-	GetProject(id string) (*Project, error)
+	CreateProject(p *projects.Project) error
+	GetProject(id string) (*projects.Project, error)
 	DeleteProject(id string) error
 	// Tasks
 	CreateTask(t *Task) (*Task, error)
@@ -22,7 +27,7 @@ func NewStore(db *sql.DB) *Storage {
 	return &Storage{db: db}
 }
 
-func (s *Storage) CreateUser(u *User) (*User, error) {
+func (s *Storage) CreateUser(u *users.User) (*users.User, error) {
 	rows, err := s.db.Exec("INSERT INTO users (email, firstName, lastName, password) VALUES (?, ?, ?, ?)", u.Email, u.FirstName, u.LastName, u.Password)
 	if err != nil {
 		return nil, err
@@ -37,8 +42,8 @@ func (s *Storage) CreateUser(u *User) (*User, error) {
 	return u, nil
 }
 
-func (s *Storage) GetUserByID(id string) (*User, error) {
-	var u User
+func (s *Storage) GetUserByID(id string) (*users.User, error) {
+	var u users.User
 	err := s.db.QueryRow("SELECT id, email, firstName, lastName, createdAt FROM users WHERE id = ?", id).Scan(&u.ID, &u.Email, &u.FirstName, &u.LastName, &u.CreatedAt)
 
 	return &u, err

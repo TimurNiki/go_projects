@@ -1,4 +1,4 @@
-package v2
+package tasks
 
 import (
 	"encoding/json"
@@ -14,7 +14,7 @@ var errProjectIDRequired = errors.New("Project id is required")
 var errUserIDRequired = errors.New("User id is required")
 
 type TasksService struct {
-	store Store
+	store store.Store
 }
 
 func NewTasksService(s Store) *TasksService {

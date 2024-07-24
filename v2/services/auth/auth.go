@@ -7,12 +7,13 @@ import (
 	"os"
 	"strconv"
 	"time"
-
+	"github.com/TimurNiki/go_api_tutorial/v2/store"
+	"github.com/TimurNiki/go_api_tutorial/v2/utils"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func withJWTAuth(handlerFunc http.HandlerFunc, store Store) http.HandlerFunc {
+func withJWTAuth(handlerFunc http.HandlerFunc, store store.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tokenString := GetTokenFromRequest(r)
 		token, err := validateJWT(tokenString)
@@ -76,7 +77,7 @@ func HashPassword(password string) (string, error) {
 	return string(hash), nil
 }
 func permissionDenied(w http.ResponseWriter) {
-	WriteJSON(w, http.StatusUnauthorized, ErrorResponse{
+	utils.WriteJSON(w, http.StatusUnauthorized, utils.ErrorResponse{
 		Error: fmt.Errorf("Permission denied").Error(),
 	})
 }

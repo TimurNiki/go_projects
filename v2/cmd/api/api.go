@@ -4,14 +4,16 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"github.com/TimurNiki/go_api_tutorial/v2/store"
+
 )
 
 type APIServer struct {
 	addr  string
-	store Store
+	store store.Store
 }
 
-func newAPIServer(addr string, store Store) *APIServer {
+func newAPIServer(addr string, store store.Store) *APIServer {
 	return &APIServer{addr, store}
 }
 

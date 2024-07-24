@@ -1,11 +1,12 @@
-package main
+package users
 
 import (
-	"encoding/json"
 	"errors"
-	"io"
+
 	"net/http"
 
+	"github.com/TimurNiki/go_api_tutorial/v2/store"
+	"github.com/TimurNiki/go_api_tutorial/v2/types"
 	"github.com/gorilla/mux"
 )
 
@@ -16,10 +17,10 @@ var errPasswordRequired = errors.New("password is required")
 
 
 type UserService struct {
-	store Store
+	store store.Store
 }
 
-func NewUserService(s Store) *UserService {
+func NewUserService(s store.Store) *UserService {
 	return &UserService{store: s}
 }
 
@@ -34,7 +35,7 @@ func (s *UserService) handleUserRegister(w http.ResponseWriter, r *http.Request)
 }
 
 func (s *UserService) handleUserLogin(w http.ResponseWriter, r *http.Request){}
-func validateUserPayload(user *User) error {
+func validateUserPayload(user *types.User) error {
 	if user.Email == "" {
 		return errEmailRequired
 	}
