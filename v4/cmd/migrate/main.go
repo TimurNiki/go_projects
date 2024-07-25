@@ -6,11 +6,9 @@ import (
 
 	_ "github.com/go-sql-driver/mysql" // mysql driver
 	mysqlDriver "github.com/go-sql-driver/mysql"
-	"github.com/golang-migrate/migrate/v4"
 	mysqlMigrate "github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/sikozonpc/ecom/configs"
-	"github.com/sikozonpc/ecom/db"
+	b"
 )
 
 func main(){

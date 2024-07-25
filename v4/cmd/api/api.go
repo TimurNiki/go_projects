@@ -4,7 +4,8 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-	"github.com/TimurNiki/go_api_tutorial/v4/services/user"
+	"v4/services/user"
+
 	"github.com/gorilla/mux"
 )
 

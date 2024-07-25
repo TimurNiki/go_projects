@@ -3,12 +3,11 @@ package card
 import (
 	"fmt"
 	"net/http"
+	"v4/types"
+	"v4/utils"
 
-	"github.com/TimurNiki/go_api_tutorial/v4/services/auth"
-	"github.com/TimurNiki/go_api_tutorial/v4/types"
-	"github.com/TimurNiki/go_api_tutorial/v4/utils"
-	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
+	
 )
 
 type Handler struct {

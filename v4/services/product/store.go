@@ -3,7 +3,7 @@ package product
 import (
 	"database/sql"
 
-	"github.com/TimurNiki/go_api_tutorial/v4/types"
+	"v4/types"
 )
 
 type Store struct {

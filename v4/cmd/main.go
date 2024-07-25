@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"v4/cmd/api"
+	"v4/configs"
+	"v4/db"
 
-	"github.com/TimurNiki/go_api_tutorial/v4/cmd/api"
-	"github.com/TimurNiki/go_api_tutorial/v4/configs"
-	"github.com/TimurNiki/go_api_tutorial/v4/db"
 	"github.com/go-sql-driver/mysql"
 )
 

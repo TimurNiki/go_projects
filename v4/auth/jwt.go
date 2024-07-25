@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"v4/configs"
+	"v4/utils"
 
-	"github.com/TimurNiki/go_api_tutorial/v4/configs"
-	"github.com/TimurNiki/go_api_tutorial/v4/utils"
 	"github.com/golang-jwt/jwt"
 )
 

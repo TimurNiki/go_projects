@@ -2,8 +2,8 @@ package product
 
 import (
 	"fmt"
-	"github.com/TimurNiki/go_api_tutorial/v4/types"
-	"github.com/TimurNiki/go_api_tutorial/v4/utils"
+	"v4/types"
+	"v4/utils"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"

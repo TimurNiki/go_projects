@@ -1,10 +1,9 @@
 package card
 
-
 import (
 	"fmt"
-	"github.com/TimurNiki/go_api_tutorial/v4/types"
-) 
+	"v4/types"
+)
 
 // meaning: this function is used to create an order
 // meaning: this function is used to create an order

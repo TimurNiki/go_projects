@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"github.com/TimurNiki/go_api_tutorial/v4/configs"
-	"github.com/TimurNiki/go_api_tutorial/v4/services/auth"
-	"github.com/TimurNiki/go_api_tutorial/v4/types"
-	"github.com/TimurNiki/go_api_tutorial/v4/utils"
-	"github.com/go-playground/validator/v10"
+	"v4/auth"
+	"v4/configs"
+	"v4/types"
+	"v4/utils"
+
 	"github.com/gorilla/mux"
 )
 
