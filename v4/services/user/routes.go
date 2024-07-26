@@ -9,6 +9,7 @@ import (
 	"v4/types"
 	"v4/utils"
 
+	"github.com/go-playground/validator"
 	"github.com/gorilla/mux"
 )
 

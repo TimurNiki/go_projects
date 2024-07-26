@@ -2,7 +2,9 @@ package main
 
 import (
 	"log"
-
+	"v2/cmd/api"
+	"v2/db"
+	"v2/store"
 	"github.com/go-sql-driver/mysql"
 )
 
@@ -16,14 +18,14 @@ func main() {
 		DBName:               "go_api_tutorial",
 	}
 
-	sqlStorage := NewMyStorage(cfg)
+	sqlStorage := db.NewMyStorage(cfg)
 	db, err := sqlStorage.Init()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	store := NewStore(db)
-	api := newAPIServer(":8080", store)
+	store := store.NewStore(db)
+	api := api.NewAPIServer(":8080", store)
 	api.Serve()
 
 }

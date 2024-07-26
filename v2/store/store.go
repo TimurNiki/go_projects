@@ -3,20 +3,18 @@ package store
 import (
 	"database/sql"
 
-	"github.com/TimurNiki/go_api_tutorial/v2/projects"
-	"github.com/TimurNiki/go_api_tutorial/v2/users"
 )
 
 type Store interface {
-	CreateUser(u *users.User) (*users.User, error)
+	CreateUser(u *User) (*User, error)
 	GetUserByID(id string) (*users.User, error)
 	// Projects
 	CreateProject(p *projects.Project) error
 	GetProject(id string) (*projects.Project, error)
 	DeleteProject(id string) error
 	// Tasks
-	CreateTask(t *Task) (*Task, error)
-	GetTask(id string) (*Task, error)
+	CreateTask(t *tasks.Task) (*tasks.Task, error)
+	GetTask(id string) (*tasks.Task, error)
 }
 
 type Storage struct {
@@ -86,7 +84,7 @@ func (s *Storage) CreateTask(t *Task) (*Task, error) {
 }
 
 func (s *Storage) GetTask(id string) (*Task, error) {
-	var t Task
+	var t tasks.Task
 	err := s.db.QueryRow("SELECT id, name, status, project_id, assigned_to, createdAt FROM tasks WHERE id = ?", id).Scan(&t.ID, &t.Name, &t.Status, &t.ProjectID, &t.AssignedToID, &t.CreatedAt)
 	return &t, nil
 }

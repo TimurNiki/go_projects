@@ -3,11 +3,12 @@ package card
 import (
 	"fmt"
 	"net/http"
+	"v4/auth"
 	"v4/types"
 	"v4/utils"
 
+	"github.com/go-playground/validator"
 	"github.com/gorilla/mux"
-	
 )
 
 type Handler struct {

@@ -5,6 +5,11 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"v2/services/auth"
+	"v2/store"
+	"v2/utils"
+
+	"v2/types"
 
 	"github.com/gorilla/mux"
 )
@@ -17,13 +22,13 @@ type TasksService struct {
 	store store.Store
 }
 
-func NewTasksService(s Store) *TasksService {
+func NewTasksService(s store.Store) *TasksService {
 	return &TasksService{store: s}
 }
 
 func (s *TasksService) RegisterRoutes(r *mux.Router) {
-	r.HandleFunc("/tasks", WithJWTAuth(s.handleCreateTask, s.store)).Methods("POST")
-	r.HandleFunc("/tasks/{id}", WithJWTAuth(s.handleGetTask, s.store)).Methods("GET")
+	r.HandleFunc("/tasks", auth.WithJWTAuth(s.handleCreateTask, s.store)).Methods("POST")
+	r.HandleFunc("/tasks/{id}", auth.WithJWTAuth(s.handleGetTask, s.store)).Methods("GET")
 }
 
 func (s *TasksService) handleCreateTask(w http.ResponseWriter, r *http.Request) {
@@ -35,31 +40,31 @@ func (s *TasksService) handleCreateTask(w http.ResponseWriter, r *http.Request) 
 
 	defer r.Body.Close()
 
-	var task *Task
+	var task *types.Task
 	err = json.Unmarshal(body, &task)
 	if err != nil {
-		WriteJSON(w, http.StatusBadRequest, ErrorResponse{Error: "Invalid request payload"})
+		utils.WriteJSON(w, http.StatusBadRequest,  utils.ErrorResponse{Error: "Invalid request payload"})
 		return
 	}
 
 	if err := validateTaskPayload(task); err != nil {
-		WriteJSON(w, http.StatusBadRequest, ErrorResponse{Error: err.Error()})
+		utils.WriteJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	t, err := s.store.CreateTask(task)
 	if err != nil {
-		WriteJSON(w, http.StatusInternalServerError, ErrorResponse{Error: "Error creating task"})
+		utils.WriteJSON(w, http.StatusInternalServerError,  utils.ErrorResponse{Error: "Error creating task"})
 		return
 	}
 
-	WriteJSON(w, http.StatusCreated, t)
+	utils.WriteJSON(w, http.StatusCreated, t)
 }
 
 func (s *TasksService) handleGetTask(w http.ResponseWriter, r *http.Request) {
 
 }
-func validateTaskPayload(task *Task) error {
+func validateTaskPayload(task *types.Task) error {
 	if task.Name == "" {
 		return errNameRequired
 	}

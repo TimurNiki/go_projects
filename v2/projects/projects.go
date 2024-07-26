@@ -2,10 +2,12 @@ package projects
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 
-	"github.com/TimurNiki/go_api_tutorial/v2/store"
-	"github.com/TimurNiki/go_api_tutorial/v2/utils"
+	"v2/store"
+	"v2/utils"
+
 	"github.com/gorilla/mux"
 )
 
@@ -28,25 +30,25 @@ func (s *ProjectService) handleCreateProject(w http.ResponseWriter, r *http.Requ
 
 	defer r.Body.Close()
 
-	var project *Project
+	var project *projects.Project
 	err = json.Unmarshal(body, &project)
 	if err != nil {
-		WriteJSON(w, http.StatusBadRequest, ErrorResponse{Error: "Invalid request payload"})
+		utils.WriteJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Invalid request payload"})
 		return
 	}
 
 	if project.Name == "" {
-		WriteJSON(w, http.StatusBadRequest, ErrorResponse{Error: "Name is required"})
+		utils.WriteJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Name is required"})
 		return
 	}
 
 	err = s.store.CreateProject(project)
 	if err != nil {
-		WriteJSON(w, http.StatusInternalServerError, ErrorResponse{Error: "Error creating project"})
+		utils.WriteJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Error creating project"})
 		return
 	}
 
-	WriteJSON(w, http.StatusCreated, project)
+	utils.WriteJSON(w, http.StatusCreated, project)
 }
 
 func (s *ProjectService) handleGetProject(w http.ResponseWriter, r *http.Request) {

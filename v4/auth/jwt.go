@@ -3,10 +3,12 @@ package auth
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
 	"v4/configs"
+	"v4/types"
 	"v4/utils"
 
 	"github.com/golang-jwt/jwt"
@@ -29,7 +31,38 @@ func CreateJWT( userID int, secret []byte) (string, error) {
 	return tokenString, err
 }
 
-func validateJWT(tokenString string) (*jwt.Token, error) {
+func WithJWTAuth(handlerFunc http.HandlerFunc, store types.UserStore) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		tokenString := utils.GetTokenFromRequest(r)
+		token, err := ValidateJWT(tokenString)
+
+		if err != nil {
+			log.Printf("Failed to validate JWT: %v", err)
+			permissionDenied(w)
+			return
+		}
+
+		if !token.Valid {
+			log.Printf("Token is not valid")
+			permissionDenied(w)
+			return
+		}
+
+
+		claims := token.Claims.(jwt.MapClaims)
+		userID := claims["userID"].(int)
+
+		_, err = store.GetUserByID(userID )
+		if err != nil {
+			log.Printf("failed to get user by id: %v", err)
+			permissionDenied(w)
+			return
+		}
+		// Token is valid
+		handlerFunc(w, r)
+	}
+}
+func ValidateJWT(tokenString string) (*jwt.Token, error) {
 	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

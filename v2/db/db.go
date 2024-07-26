@@ -1,11 +1,11 @@
-package main
+package db
 
 import (
 	"database/sql"
 	"fmt"
 	"log"
 
-	"github.com/go-sql-driver/mysql"
+ "github.com/go-sql-driver/mysql"
 )
 
 type MyStorage struct {

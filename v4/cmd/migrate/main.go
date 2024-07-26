@@ -3,12 +3,14 @@ package main
 import (
 	"log"
 	"os"
+	"v4/configs"
+	"v4/db"
 
 	_ "github.com/go-sql-driver/mysql" // mysql driver
 	mysqlDriver "github.com/go-sql-driver/mysql"
+	"github.com/golang-migrate/migrate"
 	mysqlMigrate "github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	b"
 )
 
 func main(){

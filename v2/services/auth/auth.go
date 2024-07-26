@@ -1,4 +1,4 @@
-package main
+package auth
 
 import (
 	"fmt"
@@ -7,15 +7,15 @@ import (
 	"os"
 	"strconv"
 	"time"
-	"github.com/TimurNiki/go_api_tutorial/v2/store"
-	"github.com/TimurNiki/go_api_tutorial/v2/utils"
+	"v2/store"
+	"v2/utils"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func withJWTAuth(handlerFunc http.HandlerFunc, store store.Store) http.HandlerFunc {
+func WithJWTAuth(handlerFunc http.HandlerFunc, store store.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tokenString := GetTokenFromRequest(r)
+		tokenString := utils.GetTokenFromRequest(r)
 		token, err := validateJWT(tokenString)
 
 		if err != nil {

@@ -5,8 +5,9 @@ import (
 
 	"net/http"
 
-	"github.com/TimurNiki/go_api_tutorial/v2/store"
-	"github.com/TimurNiki/go_api_tutorial/v2/types"
+	"v2/store"
+	"v2/types"
+
 	"github.com/gorilla/mux"
 )
 
