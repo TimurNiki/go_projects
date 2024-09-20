@@ -2,19 +2,21 @@ package main
 
 import (
 	// "errors"
-	"net/http"
-	"time"
-
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"go.uber.org/zap"
+	"net/http"
+	"time"
 )
 
 type application struct {
 	config config
+	logger *zap.SugaredLogger
 }
 
 type config struct {
 	addr string
+	env string
 }
 
 type authConfig struct {
@@ -41,6 +43,11 @@ type basicConfig struct {
 
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+
 	r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Route("/v1", func(r chi.Router) {
@@ -60,8 +67,8 @@ func (app *application) run(mux http.Handler) error {
 		ReadTimeout:  time.Second * 10,
 		IdleTimeout:  time.Minute,
 	}
-	jnjnj
-	shutdown := make(chan error)
+
+	// shutdown := make(chan error)
 
 	return srv.ListenAndServe()
 	// err := srv.ListenAndServe()

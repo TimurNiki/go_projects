@@ -2,11 +2,9 @@ package main
 
 import (
 	"net/http"
-
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/ui"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
-	
+	"snippetbox/ui"
 )
 
 func (app *application) routes() http.Handler {

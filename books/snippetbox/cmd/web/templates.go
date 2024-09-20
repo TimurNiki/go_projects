@@ -4,10 +4,10 @@ import (
 	"html/template"
 	"io/fs"
 	"path/filepath"
+	"snippetbox/internal/models"
 	"time"
 
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/ui"
+	"snippetbox/ui"
 )
 
 // Define a templateData type to act as the holding structure for

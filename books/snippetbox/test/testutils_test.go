@@ -12,12 +12,12 @@ import (
 	"net/url"
 	"os"
 	"regexp"
+	"snippetbox/internal/mocks"
 	"testing"
 	"time"
 
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/mocks"
 	"github.com/alexedwards/scs/v2"
-	"github.com/go-playground/form/v4"
+	"github.com/go-playground/form"
 )
 
 // Create a newTestApplication helper which returns an instance of our

@@ -8,8 +8,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/assert"
-	"snippetbox.alexedwards.net/internal/assert"
+	"snippetbox/internal/assert"
 )
 
 func TestPing(t *testing.T) {

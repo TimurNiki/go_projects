@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/validator"
+	"snippetbox/internal/models"
+	"snippetbox/internal/validator"
 
 	"github.com/julienschmidt/httprouter"
 )

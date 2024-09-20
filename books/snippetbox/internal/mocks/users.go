@@ -3,7 +3,7 @@ package mocks
 import (
 	"time"
 
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
+	"snippetbox/internal/models"
 )
 
 type UserModel struct{}

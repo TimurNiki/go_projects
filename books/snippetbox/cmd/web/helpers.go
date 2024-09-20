@@ -7,15 +7,14 @@ import (
 	"net/http"
 	"runtime/debug"
 	"time"
-
-	"github.com/go-playground/form/v4"
+	"github.com/go-playground/form"
 	"github.com/justinas/nosurf"
 )
 
 func (app *application) serverError(w http.ResponseWriter, err error) {
 	// The serverError helper writes an error message and stack trace to the errorLog,
 	// then sends a generic 500 Internal Server Error response to the user.
-	trace := fmt.Sprint("%s\n%s", err.Error(), debug.Stack())
+	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
 	app.errorLog.Output(2, trace)
 
 	// Go to the cmd/web/helpers.go file and update the serverError() helper so that it renders a
@@ -51,7 +50,7 @@ func (app *application) render(w http.ResponseWriter, status int, page string, d
 	// method that we made earlier and return.
 	ts, ok := app.templateCache[page]
 	if !ok {
-		err := fmt.Errorf("The template %s does not exist", page)
+		err := fmt.Errorf("the template %s does not exist", page)
 		app.serverError(w, err)
 		return
 	}

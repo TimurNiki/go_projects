@@ -7,8 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"snippetbox/internal/models"
 	"time"
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
 )

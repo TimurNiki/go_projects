@@ -1,10 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"net/http"
-"context"
 	"github.com/justinas/nosurf"
+	"net/http"
 )
 
 func secureHeaders(next http.Handler) http.Handler {

@@ -3,9 +3,8 @@ package models
 import (
 	"database/sql"
 	"log"
+	"snippetbox/internal/assert"
 	"testing"
-
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/assert"
 )
 
 func TestUserModelExists(t *testing.T) {

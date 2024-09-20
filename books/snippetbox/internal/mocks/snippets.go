@@ -1,9 +1,8 @@
 package mocks
 
 import (
+	"snippetbox/internal/models"
 	"time"
-
-	"github.com/TimurNiki/go_api_tutorial/books/snippetbox/internal/models"
 )
 
 var mockSnippet = &models.Snippet{
