@@ -2,21 +2,25 @@ package main
 
 import (
 	// "errors"
+	"net/http"
+	"time"
+	"v5/internal/store"
+
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
-	"net/http"
-	"time"
 )
 
 type application struct {
 	config config
 	logger *zap.SugaredLogger
+	store store.Storage
 }
 
 type config struct {
 	addr string
 	env string
+	db dbConfig
 }
 
 type authConfig struct {
