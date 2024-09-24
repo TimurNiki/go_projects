@@ -96,32 +96,33 @@ func (s *UserStore) GetByID(ctx context.Context, userID int64) (*User, error){
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	role := user.Role.Name
-	if role == "" {
-		role = "user"
-	}
+	user:=&User{}
+
+
 	
-	err := tx.QueryRowContext(
+	err := s.db.QueryRowContext(
 		ctx,
 		query,
-		user.Username,
-		user.Password.hash,
-		user.Email,
-		role,
+		userID,
 	).Scan(
 		&user.ID,
+		&user.Username,
+		&user.Email,
+		&user.Password.hash,
 		&user.CreatedAt,
+		&user.Role.ID,
+		&user.Role.Name,
+		&user.Role.Level,
+		&user.Role.Description,
 	)
 	if err != nil {
-		switch {
-		case err.Error() == `pq: duplicate key value violates unique constraint "users_email_key"`:
-			return ErrDuplicateEmail
-		case err.Error() == `pq: duplicate key value violates unique constraint "users_username_key"`:
-			return ErrDuplicateUsername
+		switch err {
+		case sql.ErrNoRows:
+			return nil, ErrNotFound
 		default:
-			return err
+			return nil, err
 		}
 	}
 
-	return nil
+	return user, nil
 }
