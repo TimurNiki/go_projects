@@ -1,9 +1,9 @@
 package main
 
 import (
+	"go.uber.org/zap"
 	"v5/internal/env"
 	"v5/internal/store"
-	"go.uber.org/zap"
 )
 
 func main() {
@@ -17,14 +17,11 @@ func main() {
 			maxIdleTime:  env.GetString("DB_MAX_IDLE_TIME", "15m"),
 		},
 		env: env.GetString("ENV", "development"),
-
 	}
-
 
 	// Logger
 	logger := zap.Must(zap.NewProduction()).Sugar()
 	defer logger.Sync()
-
 
 	db, err := db.New(
 		cfg.db.addr,

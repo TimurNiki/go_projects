@@ -1,4 +1,5 @@
 package store
+
 type PaginatedFeedQuery struct {
 	Limit  int      `json:"limit" validate:"gte=1,lte=20"`
 	Offset int      `json:"offset" validate:"gte=0"`

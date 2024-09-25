@@ -1,6 +1,9 @@
 package store
 
-import "database/sql"
+import (
+	"context"
+	"database/sql"
+)
 
 type Post struct {
 	ID        int64     `json:"id"`
@@ -24,3 +27,27 @@ type PostStore struct {
 	db *sql.DB
 }
 
+func (s *PostStore) GetByID(ctx context.Context, id int64) (*Post, error) {
+	var post Post
+
+	return &post, nil
+}
+
+func (s *PostStore) Create(ctx context.Context, post *Post) error {
+	return nil
+}
+
+func (s *PostStore) Delete(ctx context.Context, id int64) error {
+	return nil
+}
+
+func (s *PostStore) Update(ctx context.Context, post *Post) error  {
+	return nil
+}
+
+func GetUserFeed(ctx context.Context, userID int64, fq PaginatedFeedQuery) ([]PostWithMetadata, error) {
+	var feed []PostWithMetadata
+	
+	return feed, nil
+
+}
