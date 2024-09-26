@@ -9,7 +9,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/data"
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/validator"
 	"github.com/pascaldekloe/jwt"

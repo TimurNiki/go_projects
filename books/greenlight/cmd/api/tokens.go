@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/data"
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/validator"
 	"github.com/pascaldekloe/jwt"
@@ -47,15 +46,16 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 		}
 		return
 	}
+
 	// Check if the provided password matches the actual password for the user.
 	match, err := user.Password.Matches(input.Password)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
+
 	// If the passwords don't match, then we call the app.invalidCredentialsResponse()
 	// helper again and return.
-
 	if !match {
 		app.invalidCredentialsResponse(w, r)
 		return
@@ -78,6 +78,7 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 	claims.Expires = jwt.NewNumericTime(time.Now().Add(24 * time.Hour))
 	claims.Issuer = "greenlight.alexedwards.net"
 	claims.Audiences = []string{"greenlight.alexedwards.net"}
+
 	// Sign the JWT claims using the HMAC-SHA256 algorithm and the secret key from the
 	// application config. This returns a []byte slice containing the JWT as a base64-
 	// encoded string.
@@ -86,6 +87,7 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 		app.serverErrorResponse(w, r, err)
 		return
 	}
+
 	// Convert the []byte slice to a string and return it in a JSON response.
 	err = app.writeJSON(w, http.StatusCreated, envelope{"authentication_token": string(jwtBytes)}, nil)
 	if err != nil {
@@ -103,6 +105,7 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 }
 
 func (app *application) createPasswordResetTokenHandler(w http.ResponseWriter, r *http.Request) {
+	
 	var input struct {
 		Email string `json:"email"`
 	}

@@ -70,6 +70,7 @@ RETURNING id, created_at, version`
 	// Use QueryRowContext() and pass the context as the first argument.
 	return m.DB.QueryRowContext(ctx, query, args...).Scan(&movie.ID, &movie.CreatedAt, &movie.Version)
 }
+
 func (m MovieModel) Get(id int64) (*Movie, error) {
 	// The PostgreSQL bigserial type that we're using for the movie ID starts
 	// auto-incrementing at 1 by default, so we know that no movies will have ID values

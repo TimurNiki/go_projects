@@ -32,6 +32,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		Email:     input.Email,
 		Activated: false,
 	}
+
 	// Use the Password.Set() method to generate and store the hashed and plaintext
 	// passwords.
 	err = user.Password.Set(input.Password)
@@ -39,6 +40,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		app.serverErrorResponse(w, r, err)
 		return
 	}
+
 	v := validator.New()
 	// Validate the user struct and return the error messages to the client if any of
 	// the checks fail.
@@ -46,6 +48,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
+
 	// Insert the user data into the database.
 	err = app.models.Users.Insert(user)
 	if err != nil {

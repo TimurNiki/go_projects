@@ -9,10 +9,6 @@ import (
 	"runtime"
 	"strings"
 	"sync"
-
-	// "fmt"
-	// "log"
-	// "net/http"
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/vcs"
 	"os"
 	"time"
