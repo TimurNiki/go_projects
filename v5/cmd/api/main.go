@@ -1,9 +1,10 @@
 package main
 
 import (
-	"go.uber.org/zap"
+	"v5/internal/db"
 	"v5/internal/env"
 	"v5/internal/store"
+	"go.uber.org/zap"
 )
 
 func main() {
