@@ -6,11 +6,11 @@ import (
 	"expvar"
 	"flag"
 	"fmt"
+	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/vcs"
+	"os"
 	"runtime"
 	"strings"
 	"sync"
-	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/vcs"
-	"os"
 	"time"
 	// Import the pq driver so that it can register itself with the database/sql
 	// package. Note that we alias this import to the blank identifier, to stop the Go
@@ -65,8 +65,7 @@ type config struct {
 	}
 	jwt struct {
 		secret string // Add a new field to store the JWT signing secret.
-		}
-		
+	}
 }
 
 // Define an application struct to hold the dependencies for our HTTP handlers, helpers,
@@ -116,9 +115,9 @@ func main() {
 	flag.StringVar(&cfg.smtp.username, "smtp-username", "0abf276416b183", "SMTP username")
 	flag.StringVar(&cfg.smtp.password, "smtp-password", "d8672aa2264bb5", "SMTP password")
 	flag.StringVar(&cfg.smtp.sender, "smtp-sender", "Greenlight <no-reply@greenlight.net>", "SMTP sender")
-// Parse the JWT signing secret from the command-line-flag. Notice that we leave the
-// default value as the empty string if no flag is provided.
-flag.StringVar(&cfg.jwt.secret, "jwt-secret", "", "JWT secret")
+	// Parse the JWT signing secret from the command-line-flag. Notice that we leave the
+	// default value as the empty string if no flag is provided.
+	flag.StringVar(&cfg.jwt.secret, "jwt-secret", "", "JWT secret")
 
 	// Use the flag.Func() function to process the -cors-trusted-origins command line
 	// flag. In this we use the strings.Fields() function to split the flag value into a
