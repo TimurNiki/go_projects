@@ -21,6 +21,7 @@ type Storage struct {
 		Update(context.Context, *Post) error
 		GetUserFeed(context.Context, int64, PaginatedFeedQuery) ([]PostWithMetadata, error)
 	}
+
 	Users interface {
 		GetByID(context.Context, int64) (*User, error)
 		GetByEmail(context.Context, string) (*User, error)
@@ -29,6 +30,7 @@ type Storage struct {
 		Activate(context.Context, string) error
 		Delete(context.Context, int64) error
 	}
+
 	Roles interface {
 		GetByName(context.Context, string) (*Role, error)
 	}
@@ -37,6 +39,7 @@ type Storage struct {
 		Create(context.Context, *Comment) error
 		GetByPostID(context.Context, int64) ([]Comment, error)
 	}
+
 	Followers interface {
 		Follow(ctx context.Context, followerID, userID int64) error
 		Unfollow(ctx context.Context, followerID, userID int64) error
@@ -49,9 +52,9 @@ func NewStorage(db *sql.DB) Storage {
 		Users: &UserStore{db},
 		Roles: &RoleStore{db},
 		Comments: &CommentStore{db},
+		Followers: &FollowerStore{db},
 	}
 }
-
 
 // withTx executes a function within a database transaction.
 func withTx(db *sql.DB, ctx context.Context, fn func(*sql.Tx) error) error {
