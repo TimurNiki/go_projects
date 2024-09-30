@@ -7,15 +7,13 @@ import (
 	"database/sql"
 	"encoding/base32"
 	"time"
-
 	"github.com/TimurNiki/go_api_tutorial/books/greenlight/internal/validator"
 )
 
 const (
 	ScopeActivation     = "activation"
 	ScopeAuthentication = "authentication"
-	ScopePasswordReset = "password-reset"
-
+	ScopePasswordReset  = "password-reset"
 )
 
 // Define a Token struct to hold the data for an individual token. This includes the
@@ -33,12 +31,12 @@ func generateToken(userID int64, ttl time.Duration, scope string) (*Token, error
 	// Create a Token instance containing the user ID, expiry, and scope information.
 	// Notice that we add the provided ttl (time-to-live) duration parameter to the
 	// current time to get the expiry time?
-
 	token := &Token{
 		UserID: userID,
 		Expiry: time.Now().Add(ttl),
 		Scope:  scope,
 	}
+
 	// Initialize a zero-valued byte slice with a length of 16 bytes.
 	randomBytes := make([]byte, 16)
 
@@ -83,6 +81,7 @@ type TokenModel struct {
 // The New() method is a shortcut which creates a new Token struct and then inserts the
 // data in the tokens table.
 func (m TokenModel) New(userID int64, ttl time.Duration, scope string) (*Token, error) {
+
 	token, err := generateToken(userID, ttl, scope)
 	if err != nil {
 		return nil, err
@@ -93,12 +92,16 @@ func (m TokenModel) New(userID int64, ttl time.Duration, scope string) (*Token, 
 
 // Insert() adds the data for a specific token to the tokens table.
 func (m TokenModel) Insert(token *Token) error {
+
 	query := `
 INSERT INTO tokens (hash, user_id, expiry, scope)
 VALUES ($1, $2, $3, $4)`
+
 	args := []any{token.Hash, token.UserID, token.Expiry, token.Scope}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
+
 	_, err := m.DB.ExecContext(ctx, query, args...)
 	return err
 
@@ -109,9 +112,10 @@ func (m TokenModel) DeleteAllForUser(scope string, userID int64) error {
 	query := `
 	DELETE FROM tokens
 	WHERE scope = $1 AND user_id = $2`
+
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
+
 	_, err := m.DB.ExecContext(ctx, query, scope, userID)
 	return err
 }
-
