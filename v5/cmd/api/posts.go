@@ -1,6 +1,9 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+	"v5/internal/store"
+)
 
 type postKey string
 
@@ -25,5 +28,22 @@ func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	user:=getUserFromContext(r)
+
+	post:=&store.Post{
+		Title: payload.Title,
+		Content:payload.Content,
+		Tags: payload.Tags,
+		UserID: user.ID,
+	}
 	
+	ctx := r.Context()
+
+	if err:=app.store.Posts.Create(ctx, post); err!=nil{
+		app.internalServerError(w,r, err)
+		return
+	}
+	if err := app.jsonResponse(w, http.StatusCreated, post); err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
 }
