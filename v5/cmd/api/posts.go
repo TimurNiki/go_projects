@@ -1,8 +1,13 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"net/http"
+	"strconv"
 	"v5/internal/store"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type postKey string
@@ -22,28 +27,80 @@ func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if err:=Validate.Struct(payload);err!=nil{
+	if err := Validate.Struct(payload); err != nil {
 		app.badRequestResponse(w, r, err)
 		return
 	}
 
-	user:=getUserFromContext(r)
+	user := getUserFromContext(r)
 
-	post:=&store.Post{
-		Title: payload.Title,
-		Content:payload.Content,
-		Tags: payload.Tags,
-		UserID: user.ID,
+	post := &store.Post{
+		Title:   payload.Title,
+		Content: payload.Content,
+		Tags:    payload.Tags,
+		UserID:  user.ID,
 	}
-	
+
 	ctx := r.Context()
 
-	if err:=app.store.Posts.Create(ctx, post); err!=nil{
-		app.internalServerError(w,r, err)
+	if err := app.store.Posts.Create(ctx, post); err != nil {
+		app.internalServerError(w, r, err)
 		return
 	}
 	if err := app.jsonResponse(w, http.StatusCreated, post); err != nil {
 		app.internalServerError(w, r, err)
 		return
 	}
+}
+
+func (app *application) getPostHandler(w http.ResponseWriter, r *http.Request) {
+	post := getPostFromCtx(r)
+
+	comments, err := app.store.Comments.GetByPostID(r.Context(), post.ID)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+	post.Comments = comments
+
+	if err := app.jsonResponse(w, http.StatusOK, post); err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+
+}
+
+func (app *application) deletePostHandler(w http.ResponseWriter, r *http.Request) {
+	idParam := chi.URLParam(r, "postID")
+	id, err := strconv.ParseInt(idParam, 10, 64)
+	if err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+	ctx := r.Context()
+
+	if err := app.store.Posts.Delete(ctx, id); err != nil {
+		switch {
+		case errors.Is(err, store.ErrNotFound):
+			app.notFoundResponse(w, r, err)
+		default:
+			app.internalServerError(w, r, err)
+		}
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+
+}
+
+func getPostFromCtx(r *http.Request) *store.Post {
+	post, _ := r.Context().Value(postCtx).(*store.Post)
+	return post
+}
+
+func (app *application) updatePost(ctx context.Context, post *store.Post) error {
+	if err := app.store.Posts.Update(ctx, post); err != nil {
+		return err
+	}
+	app.cacheStorage.Users.Delete(ctx, post.ID)
+	return nil
 }
