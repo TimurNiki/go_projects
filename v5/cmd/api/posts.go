@@ -70,6 +70,41 @@ func (app *application) getPostHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+type UpdatePostPayload struct {
+	Title   *string `json:"title" validate:"omitempty,max=100"`
+	Content *string `json:"content" validate:"omitempty,max=1000"`
+}
+
+func (app *application) updatePostHandler(w http.ResponseWriter, r *http.Request) {
+	post := getPostFromCtx(r)
+	var payload UpdatePostPayload
+
+	if err := readJSON(w, r, &payload); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+	if err := Validate.Struct(payload); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+	if payload.Content != nil {
+		post.Content = *payload.Content
+	}
+	if payload.Title != nil {
+		post.Title = *payload.Title
+	}
+
+	ctx := r.Context()
+
+	if err := app.updatePost(ctx, post); err != nil {
+		app.internalServerError(w, r, err)
+	}
+
+	if err := app.jsonResponse(w, http.StatusOK, post); err != nil {
+		app.internalServerError(w, r, err)
+	}
+}
+
 func (app *application) deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "postID")
 	id, err := strconv.ParseInt(idParam, 10, 64)
