@@ -19,6 +19,7 @@ func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {
 		app.badRequestResponse(w, r, err)
 		return
 	}
+	
 	user, err := app.getUser(r.Context(), userID)
 	if err != nil {
 		switch err {
@@ -33,6 +34,33 @@ func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err := app.jsonResponse(w, http.StatusOK, user); err != nil {
 		app.internalServerError(w, r, err)
+	}
+}
+
+func (app *application) followUserHandler(w http.ResponseWriter, r *http.Request) {
+	followerUser := getUserFromContext(r)
+
+	followedID, err := strconv.ParseInt(chi.URLParam(r, "userID"), 10, 64)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	ctx := r.Context()
+
+	if err := app.store.Followers.Follow(ctx, followerUser.ID, followedID); err != nil {
+		switch err {
+		case store.ErrConflict:
+			app.conflictResponse(w, r, err)
+			return
+		default:
+			app.internalServerError(w, r, err)
+			return
+		}
+
+		if err := app.jsonResponse(w, http.StatusNoContent, nil); err != nil {
+			app.internalServerError(w, r, err)
+		}
 	}
 }
 

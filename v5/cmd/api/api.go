@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "errors"
 	"context"
 	"errors"
 	"net/http"
@@ -12,7 +11,6 @@ import (
 	"v5/internal/auth"
 	"v5/internal/store"
 	"v5/internal/store/cache"
-
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
@@ -73,11 +71,19 @@ func (app *application) mount() http.Handler {
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/health", app.healthCheckHandler)
+
 		r.Route("/{userID}", func(r chi.Router) {
 			r.Get("/", app.getUserHandler)
 		})
+		
 		r.Route("/users", func(r chi.Router) {
 			r.Put("/activate/{token}", app.activateUserHandler)
+
+			r.Route("/{userID}", func(r chi.Router){
+				r.Get("/",app.getUserHandler)
+				r.Put("/follow", app.followUserHandler)
+				r.Put("/unfollow", app.unfollowUserHandler)
+			})
 		})
 	})
 
