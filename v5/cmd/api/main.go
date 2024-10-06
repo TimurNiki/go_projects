@@ -5,6 +5,7 @@ import (
 	"v5/internal/auth"
 	"v5/internal/db"
 	"v5/internal/env"
+	"v5/internal/ratelimiter"
 	"v5/internal/store"
 	"v5/internal/store/cache"
 
@@ -38,6 +39,12 @@ func main() {
 				exp:    time.Hour * 24 * 3, // 3 days
 				iss:    "gophersocial",
 			},
+		},
+
+		rateLimiter: ratelimiter.Config{
+			RequestsPerTimeFrame: env.GetInt("RATELIMITER_REQUESTS_COUNT", 20),
+			TimeFrame:            time.Second * 5,
+			Enabled:              env.GetBool("RATE_LIMITER_ENABLED", true),
 		},
 	}
 
@@ -76,6 +83,11 @@ func main() {
 		defer rdb.Close()
 	}
 
+	rateLimiter := ratelimiter.NewFixedWindowLimiter(
+		cfg.rateLimiter.RequestsPerTimeFrame,
+		cfg.rateLimiter.TimeFrame,
+	)
+
 	store := store.NewStorage(db)
 	cacheStorage := cache.NewRedisStorage(rdb)
 	app := &application{
@@ -83,6 +95,7 @@ func main() {
 		store:         store,
 		cacheStorage:  cacheStorage,
 		authenticator: jwtAuthenticator,
+		rateLimiter: rateLimiter,
 	}
 	mux := app.mount()
 

@@ -9,8 +9,10 @@ import (
 	"syscall"
 	"time"
 	"v5/internal/auth"
+	"v5/internal/ratelimiter"
 	"v5/internal/store"
 	"v5/internal/store/cache"
+
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
@@ -22,14 +24,16 @@ type application struct {
 	store         store.Storage
 	authenticator auth.Authenticator
 	cacheStorage  cache.Storage
+	rateLimiter   ratelimiter.Limiter
 }
 
 type config struct {
-	addr     string
-	env      string
-	db       dbConfig
-	auth     authConfig
-	redisCfg redisConfig
+	addr        string
+	env         string
+	db          dbConfig
+	auth        authConfig
+	redisCfg    redisConfig
+	rateLimiter ratelimiter.Config
 }
 type redisConfig struct {
 	addr    string
@@ -69,22 +73,39 @@ func (app *application) mount() http.Handler {
 
 	r.Use(middleware.Timeout(60 * time.Second))
 
+	r.Route("/posts", func(r chi.Router) {
+		r.Post("/", app.createPostHandler)
+
+		r.Route("/{postID}",
+			func(r chi.Router) {
+				r.Get("/", app.getPostHandler)
+			})
+	})
+
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/health", app.healthCheckHandler)
 
 		r.Route("/{userID}", func(r chi.Router) {
 			r.Get("/", app.getUserHandler)
 		})
-		
+
 		r.Route("/users", func(r chi.Router) {
 			r.Put("/activate/{token}", app.activateUserHandler)
 
-			r.Route("/{userID}", func(r chi.Router){
-				r.Get("/",app.getUserHandler)
+			r.Route("/{userID}", func(r chi.Router) {
+				r.Get("/", app.getUserHandler)
 				r.Put("/follow", app.followUserHandler)
 				r.Put("/unfollow", app.unfollowUserHandler)
 			})
+
+			r.Group(func(r chi.Router) {
+				r.Get("/feed", app.getUserFeedHandler)
+			})
 		})
+	})
+
+	r.Route("/authentication", func(r chi.Router) {
+		r.Post("/user", app.registerUserHandler)
 	})
 
 	return r

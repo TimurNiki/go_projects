@@ -105,6 +105,15 @@ func (app *application) updatePostHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
+func (app *application) updatePost(ctx context.Context, post *store.Post) error {
+	if err := app.store.Posts.Update(ctx, post); err != nil {
+		return err
+	}
+	app.cacheStorage.Users.Delete(ctx, post.ID)
+	return nil
+}
+
+
 func (app *application) deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	idParam := chi.URLParam(r, "postID")
 	id, err := strconv.ParseInt(idParam, 10, 64)
@@ -132,10 +141,3 @@ func getPostFromCtx(r *http.Request) *store.Post {
 	return post
 }
 
-func (app *application) updatePost(ctx context.Context, post *store.Post) error {
-	if err := app.store.Posts.Update(ctx, post); err != nil {
-		return err
-	}
-	app.cacheStorage.Users.Delete(ctx, post.ID)
-	return nil
-}
