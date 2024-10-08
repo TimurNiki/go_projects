@@ -5,6 +5,7 @@ import (
 	"v5/internal/auth"
 	"v5/internal/db"
 	"v5/internal/env"
+	"v5/internal/mailer"
 	"v5/internal/ratelimiter"
 	"v5/internal/store"
 	"v5/internal/store/cache"
@@ -29,6 +30,13 @@ func main() {
 			db:      env.GetInt("REDIS_DB", 0),
 			enabled: env.GetBool("REDIS_ENABLED", false),
 		},
+		mail: mailConfig{
+			exp:       time.Hour * 24 * 3, // 3 days
+			fromEmail: env.GetString("FROM_EMAIL", ""),
+			sendGrid: sendGridConfig{
+				apiKey: env.GetString("SENDGRID_API_KEY", ""),
+			},
+		},
 		auth: authConfig{
 			basic: basicConfig{
 				user: env.GetString("AUTH_BASIC_USER", "admin"),
@@ -47,6 +55,8 @@ func main() {
 			Enabled:              env.GetBool("RATE_LIMITER_ENABLED", true),
 		},
 	}
+
+	mailer := mailer.NewSendgrid(cfg.mail.sendGrid.apiKey, cfg.mail.fromEmail)
 
 	// Logger
 	logger := zap.Must(zap.NewProduction()).Sugar()
@@ -95,6 +105,8 @@ func main() {
 		store:         store,
 		cacheStorage:  cacheStorage,
 		authenticator: jwtAuthenticator,
+		mailer:        mailer,
+
 		rateLimiter: rateLimiter,
 	}
 	mux := app.mount()

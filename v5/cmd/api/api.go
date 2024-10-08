@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 	"v5/internal/auth"
+	"v5/internal/mailer"
 	"v5/internal/ratelimiter"
 	"v5/internal/store"
 	"v5/internal/store/cache"
@@ -25,6 +26,7 @@ type application struct {
 	authenticator auth.Authenticator
 	cacheStorage  cache.Storage
 	rateLimiter   ratelimiter.Limiter
+	mailer        mailer.Client
 }
 
 type config struct {
@@ -34,7 +36,9 @@ type config struct {
 	auth        authConfig
 	redisCfg    redisConfig
 	rateLimiter ratelimiter.Config
+	mail        mailConfig
 }
+
 type redisConfig struct {
 	addr    string
 	pw      string
@@ -62,6 +66,16 @@ type dbConfig struct {
 type basicConfig struct {
 	user string
 	pass string
+}
+
+type mailConfig struct {
+	sendGrid  sendGridConfig
+	fromEmail string
+	exp       time.Duration
+}
+
+type sendGridConfig struct {
+	apiKey string
 }
 
 func (app *application) mount() http.Handler {
