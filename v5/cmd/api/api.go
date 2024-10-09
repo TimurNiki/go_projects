@@ -9,34 +9,37 @@ import (
 	"syscall"
 	"time"
 	"v5/internal/auth"
+	"v5/internal/env"
 	"v5/internal/mailer"
 	"v5/internal/ratelimiter"
 	"v5/internal/store"
 	"v5/internal/store/cache"
-
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 	"go.uber.org/zap"
 )
 
 type application struct {
 	config        config
-	logger        *zap.SugaredLogger
 	store         store.Storage
-	authenticator auth.Authenticator
 	cacheStorage  cache.Storage
-	rateLimiter   ratelimiter.Limiter
+	logger        *zap.SugaredLogger
 	mailer        mailer.Client
+	authenticator auth.Authenticator
+	rateLimiter   ratelimiter.Limiter
 }
 
 type config struct {
 	addr        string
-	env         string
 	db          dbConfig
+	env         string
+	apiURL      string
+	mail        mailConfig
+	frontendURL string
 	auth        authConfig
 	redisCfg    redisConfig
 	rateLimiter ratelimiter.Config
-	mail        mailConfig
 }
 
 type redisConfig struct {
@@ -84,7 +87,14 @@ func (app *application) mount() http.Handler {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{env.GetString("CORS_ALLOWED_ORIGIN", "http://localhost:5174")},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
 	r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Route("/posts", func(r chi.Router) {
@@ -93,6 +103,9 @@ func (app *application) mount() http.Handler {
 		r.Route("/{postID}",
 			func(r chi.Router) {
 				r.Get("/", app.getPostHandler)
+
+				// r.Patch("/", app.checkPostOwnership("moderator", app.updatePostHandler))
+				// r.Delete("/", app.checkPostOwnership("admin", app.deletePostHandler))
 			})
 	})
 
@@ -120,7 +133,7 @@ func (app *application) mount() http.Handler {
 
 	r.Route("/authentication", func(r chi.Router) {
 		r.Post("/user", app.registerUserHandler)
-	})
+		r.Post("/token", app.createTokenHandler)	})
 
 	return r
 }

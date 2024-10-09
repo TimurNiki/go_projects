@@ -3,8 +3,10 @@ package main
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"net/http"
 	"time"
+	"v5/internal/mailer"
 	"v5/internal/store"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -55,7 +57,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	hash := sha256.Sum256([]byte(plainToken))
 	hashToken := hex.EncodeToString(hash[:])
 
-	err := app.store.Users.CreateAndInvite(ctx, user, hashToken)
+	err := app.store.Users.CreateAndInvite(ctx, user, hashToken,app.config.mail.exp)
 	if err != nil {
 		switch err {
 		case store.ErrDuplicateEmail:
@@ -70,6 +72,33 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	userWithToken := UserWithToken{
 		User:  user,
 		Token: plainToken,
+	}
+	
+	activationURL:=fmt.Sprintf("%s/confirm/%s", app.config.frontendURL, plainToken)
+	
+
+	isProdEnv := app.config.env == "production"
+	vars := struct {
+		Username      string
+		ActivationURL string
+	}{
+		Username:      user.Username,
+		ActivationURL: activationURL,
+	}
+
+	//send mail
+
+	status,err:=app.mailer.Send(mailer.UserWelcomeTemplate, user.Username, user.Email, vars, !isProdEnv)
+
+	if err != nil {
+		app.logger.Errorw("error sending welcome email", "error", err)
+		// rollback user creation if email fails (SAGA pattern)
+		if err := app.store.Users.Delete(ctx, user.ID); err != nil {
+			app.logger.Errorw("error deleting user", "error", err)
+		}
+
+		app.internalServerError(w, r, err)
+		return
 	}
 
 	app.logger.Infow("Email sent", "status code", status)
