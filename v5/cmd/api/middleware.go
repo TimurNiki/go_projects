@@ -6,9 +6,8 @@ import (
 	"v5/internal/store"
 )
 
-
-func(app *application) checkRolePrecedence(ctx context.Context, user *store.User, roleName string) (bool, error)  {
-	role,err:=app.store.Roles.GetByName(ctx, roleName)
+func (app *application) checkRolePrecedence(ctx context.Context, user *store.User, roleName string) (bool, error) {
+	role, err := app.store.Roles.GetByName(ctx, roleName)
 	if err != nil {
 		return false, err
 	}
