@@ -2,8 +2,13 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 	"v5/internal/store"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 func (app *application) AuthTokenMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
