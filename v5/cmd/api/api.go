@@ -83,6 +83,7 @@ type sendGridConfig struct {
 
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
+
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
@@ -95,6 +96,7 @@ func (app *application) mount() http.Handler {
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
+	
 	r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Route("/posts", func(r chi.Router) {
